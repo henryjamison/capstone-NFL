@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tables</title>
+    <link rel="stylesheet" type="text/css" href="../static/tables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>    
+    <script>
+        $(document).ready(function() {
+            $('.myTable').DataTable({
+                select: true,
+                scrollX:true,
+                scrollY:true,
+                initComplete: function () {
+                    // Show the table once DataTables is ready
+                    $('.myTable').css('display', 'table');
+                },
+        });
+
+
+            $('#yearDropdown').on('change', function() {
+                var selectedYear = $(this).val();
+                window.location.href = '/tables/' + selectedYear;
+                sessionStorage.setItem('selectedYear', selectedYear)
+            });
+
+            var selectedYear = sessionStorage.getItem('selectedYear');
+            console.log(selectedYear);
+            $('#yearDropdown').val(selectedYear);
+
+        });
+    </script>
+    
+</head>
+<body>
+    <div class="top-header">
+        <a class="home-btn" href="{{ url_for('render_home')}}">Home</a>
+        <div class="years">
+            <label class="year-label" for="yearDropdown">Year:  </label>
+            <select id="yearDropdown">
+                {% for year in years %}
+                    <option id="value" value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    {% for table in tables %}
+        <table class="myTable">
+            <thead>
+                <tr>
+                    {% for title in titles %}
+                        <th>{{ title }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {{table | safe}}
+            </tbody>
+        </table>
+    {% endfor %}
+</body>
+</html>
