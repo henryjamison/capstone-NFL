@@ -14,7 +14,7 @@ body{
 }
 form{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     margin: 1em;
 }   
@@ -24,7 +24,7 @@ form{
     background-color: rgb(188, 188, 255);
     color: rgb(48, 48, 182);
     border: none;
-    height: 30px;
+    height: 25px;
     width: 80px;
     vertical-align: middle;
     -webkit-transform: perspective(1px) translateZ(0);
@@ -34,6 +34,7 @@ form{
     transition-duration: 0.3s;
     -webkit-transition-property: box-shadow;
     transition-property: box-shadow;
+    margin-left: 10px;
   }
 .hvr-glow:hover, .hvr-glow:focus, .hvr-glow:active {
     box-shadow: 0 0 8px rgba(153, 153, 246, 0.6);;
@@ -57,4 +58,13 @@ a:hover{
 }
 .resTable{
     zoom: 55%;
+}
+h3{
+    margin-right: 10px;
+}
+div.links{
+    display: flex;
+    /* border-bottom: 1px solid black; */
+    width: 100vw;
+    justify-content: center;
 }

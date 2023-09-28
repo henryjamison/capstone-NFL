@@ -85,10 +85,13 @@ def get_fant_table(player_id):
     # This goes through column value levels and if the column starts with Unnamed,
     # The value is replaced with "", we cant drop the column outright so we must
     # replace it with a "".
+    # print(table.columns.values)
+    table.rename({'Unnamed: 4_level_2':'Home/Away'}, axis=1, inplace=True)
     new_columns = []
     for col in table.columns:
         new_col = []
         for level in col:
+            print (level)
             if "Unnamed" in level:
                 new_col.append('')
             else:
@@ -98,6 +101,6 @@ def get_fant_table(player_id):
     table.columns = pd.MultiIndex.from_tuples(new_columns)
     table = table.drop(columns=('Rk'), level=-1)
     table.fillna(0,inplace=True)
-    print(table.columns.values)
+    table.loc[table.index[:-1], ('', '', 'Home/Away')] = table.loc[table.index[:-1], ('', '', 'Home/Away')].apply(lambda x: 'Away' if x == '@' else ('Home' if x == 0 else x))
     return table
 
