@@ -3,14 +3,85 @@
 <head>
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="../static/home.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script text="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>    
+    <script>
+        $(document).ready(function() {
+            $('.playerTable').DataTable({
+                select: true,
+                scrollX:true,
+                scrollY:true,
+                responsive:true,
+                initComplete: function () {
+                    // Show the table once DataTables is ready
+                    $('.playerTable').css('display', 'table');
+                },
+        });
+        $(document).ready(function() {
+        $('#textarea').on('keydown', function(event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault(); // Prevent newline in textarea
+                $('form').submit(); // Submit the form
+            }
+        });
+    });
+        });
+    </script>
 </head>
 
 <body>
-    <div class="container">
+        <div class="container">
+            <div class="links">
+                <a class="home-btn" href="{{ url_for('render_home')}}">Home</a>
+                <a href="{{ url_for('render_tables')}}">Tables</a>
+            </div>
+            <div class="form">
+                <form method="POST" onsubmit="{{url_for('render_home')}}">
+                    <textarea id="textarea" name="textarea" rows="3" cols="30"></textarea>
+                    <br>
+                    <input class="hvr-glow" type="submit" value="Search">
+                    <!-- <label for="team">Select NFL team:</label>
+                    <select id="team" name="selected_team">
+                        <option value="">-- Select Team --</option>
+                        {% for team in teams %}
+                            <option value="{{ team }}">{{ team }}</option>
+                        {% endfor %}
+                    </select> -->
+                </form>
+            </div>
+            {% if error %}
+            <div class="message">
+                <p>{{ err_message }}</p>
+            </div>
+            {% else %}
+                <h2>{{ name }}</h2>
+            {% endif %}
+        <div class="resTable">
+            {% for table in tables %}
+            <table class="playerTable">
+                <thead>
+                    <tr>
+                        {% for title in titles %}
+                            <th>{{ title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {{table | safe}}
+                </tbody>
+            </table>
+        {% endfor %}
+        </div>
+    </div>
 
-        <div class="wrapper">
+        <!-- <div class="wrapper">
         <div>
-            <h1>Home</h1>
+            <a class="home-btn" href="{{ url_for('render_home')}}">Home</a>
         </div>
 
         <div>
@@ -18,15 +89,27 @@
         </div>
 
         </div>
+            <form method="POST">
+                <textarea name="textarea"></textarea>
+                <input type="submit" value="Search">
+            </form>
+        </div>
 
-        <div>
-            </div>
-                <form method="POST">
-                    <textarea name="textarea"></textarea>
-                    <input type="submit" value="Search">
-                </form>
-            </div>
-        <div>
-    </div>
+        </div>
+            {% for table in tables %}
+            <table class="playerTable">
+                <thead>
+                    <tr>
+                        {% for title in titles %}
+                            <th>{{ title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {{table | safe}}
+                </tbody>
+            </table>
+        {% endfor %}
+    </div> -->
 </body>
 </html>
