@@ -14,6 +14,7 @@
                 select: true,
                 scrollX:true,
                 scrollY:true,
+                responsive:true,
                 initComplete: function () {
                     // Show the table once DataTables is ready
                     $('.myTable').css('display', 'table');
@@ -22,21 +23,86 @@
 
 
             $('#yearDropdown').on('change', function() {
-                var selectedYear = $(this).val();
-                window.location.href = '/tables/' + selectedYear;
+                let selectedYear = $(this).val();
+                console.log(selectedYear);
+                // window.location.href = '/tables/' + selectedYear;
                 sessionStorage.setItem('selectedYear', selectedYear)
             });
 
-            var selectedYear = sessionStorage.getItem('selectedYear');
-            console.log(selectedYear);
+            $('#positionDropdown').on('change', function() {
+                let selectedPostion = $(this).val();
+                console.log(selectedPostion);
+                // window.location.href = '/tables/' + selectedYear;
+                sessionStorage.setItem('selectedPosition', selectedPostion)
+            });
+
+            $('#teamDropdown').on('change', function() {
+                let selectedTeam = $(this).val();
+                console.log(selectedTeam);
+                // window.location.href = '/tables/' + selectedYear;
+                sessionStorage.setItem('selectedTeam', selectedTeam)
+            });
+            let selectedYear = sessionStorage.getItem('selectedYear');
+            let selectedTeam = sessionStorage.getItem('selectedTeam');
+            let selectedPosition = sessionStorage.getItem('selectedPosition');
+
             $('#yearDropdown').val(selectedYear);
+            $('#teamDropdown').val(selectedTeam);
+            $('#positionDropdown').val(selectedPosition);
 
         });
     </script>
     
 </head>
 <body>
-    <div class="top-header">
+    <div class="container">
+        <div id="header">
+            <div class="left-header">
+                <img id="logo" src="../static/fantasy-logo.png" alt="Fantasy Foresight Logo">
+                <h1 id="logo-text">Fantasy Foresight</h1>
+            </div>
+            <div class="links">
+                <a class="link" href="{{url_for('render_home')}}">Home</a>
+                <a class="link" href="{{url_for('render_search')}}">Search</a>
+                <a class="link" href="{{url_for('render_tables')}}">Team Stats</a>
+            </div>
+        </div>
+
+        <div class="dropdown">
+        <form method="POST" action="{{url_for('filter_data')}}">
+            <div class="dropdown-item" id="filter-form">
+                <label class="above" for="teamDropdown">NFL Team</label>
+                <select class="above" id="teamDropdown" name="selected_team">
+                    <option value=""> Select Team </option>
+                    {% for team in teams %}
+                        <option value="{{ team }}">{{ team }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="dropdown-item">
+                <label class="above" for="positionDropdown">Position</label>
+                <select class="above" id="positionDropdown" name="selected_postion">
+                    <option value=""> Select Position </option>
+                    {% for pos in positions %}
+                        <option value="{{ pos }}">{{ pos }}</option>
+                    {% endfor %}
+                </select>
+            </div>  
+            <div class="dropdown-item">
+                <label class="above" for="yearDropdown">Year</label>
+                <select class="above" id="yearDropdown" name="selected_year">
+                    <option value=""> Select Year </option>
+                    {% for year in years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div> 
+            <button type="submit">
+                Filter
+            </button>
+        </form>
+        </div>
+    <!-- <div class="top-header">
         <a class="home-btn" href="{{ url_for('render_home')}}">Home</a>
         <div class="years">
             <label class="year-label" for="yearDropdown">Year:  </label>
@@ -46,7 +112,7 @@
                 {% endfor %}
             </select>
         </div>
-    </div>
+    </div> <-->
 
     {% for table in tables %}
         <table class="myTable">
@@ -62,5 +128,6 @@
             </tbody>
         </table>
     {% endfor %}
+    </div>
 </body>
 </html>

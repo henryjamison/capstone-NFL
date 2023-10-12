@@ -1,14 +1,121 @@
-table {
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Roboto:ital,wght@0,300;0,500;1,500&display=swap');
+
+:root{
+  --dark-bg: #020C22;
+  --dark-primary: #1954D1;
+  --dark-secondary: #020F2C;
+  --dark-acc: #FF0000;
+  --dark-text: #F0F5FE;
+  font-family: Roboto;
+}
+#logo{
+  padding: 1em;
+  height: 100px;
+  width: 100px;
+  margin-right: -1em;
+}
+.links{
+  flex-wrap: wrap;
+}
+.left-header{
+  display: flex;
+  margin-left: 1em;
+  align-items: center;
+}
+
+body{
+  all: unset;
+  background-color: var(--dark-bg);
+  color:var(--dark-text);
+  min-width: 600px
+}
+#logo-text{
+  margin: 1em;
+}
+.container{
+  display: flex;
+  flex-direction: column;
+}
+#header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  /* position: absolute; */
+}
+.links{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  padding: 1em;
+  margin-right: 1em;
+}
+a.link{
+  all:unset;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* display: flex; */
+}
+
+a.link:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.dropdown{
+  display: flex;
+  justify-content: center;
+}
+.dropdown-item{
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
+  background-color: var(--dark-bg);
+}
+label{
+  margin-bottom: .5em;
+}
+select{
+  padding: 1em;
+  border-radius: 1em;
+
+}
+#DataTables_Table_0_wrapper{
+  display: none;
+}
+.myTable{
+  zoom: 55%;
+}
+
+table,tbody,td,th,label,select,input, #DataTables_Table_1_info{
+  background-color: var(--dark-secondary);
+  color:var(--dark-text)
+}
+input:focus{
+  outline: none;
+}
+.above{
+  background-color: var(--dark-bg);
+  color:var(--dark-text)
+}
+#DataTables_Table_1,tbody{
+  width: 100% !important;
+}
+form{
+  display: flex;
+}
+
+/* table {
     border-collapse: collapse;
-    /* display: flex; */
-    
   }
 .myTable{
   display: none;
 }
 
 th{
-  /* text-align: center; */
   padding: 4px;
 
 }
@@ -53,4 +160,4 @@ td{
 }
 .myTable tbody tr:hover{
   background-color: lightgoldenrodyellow;
-}
+} */
