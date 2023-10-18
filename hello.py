@@ -3,6 +3,12 @@ from bs4 import BeautifulSoup
 import numpy as np
 import pandas as pd
 import requests
+from sklearn.preprocessing import OneHotEncoder
+import warnings
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import ElasticNet
+warnings.filterwarnings("ignore")
 
 
 
@@ -11,9 +17,9 @@ app.secret_key = 'SECRET'
 
 teams = [
     "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE",
-    "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC",
-    "LV", "LAC", "LAR", "MIA", "MIN", "NE", "NO", "NYG",
-    "NYJ", "PHI", "PIT", "SF", "SEA", "TB", "TEN", "WSH"
+    "DAL", "DEN", "DET", "GNB", "HOU", "IND", "JAX", "KAN",
+    "LVR", "LAC", "LAR", "MIA", "MIN", "NWE", "NOR", "NYG",
+    "NYJ", "PHI", "PIT", "SFO", "SEA", "TAM", "TEN", "WAS"
 ]
 positions=["RB","QB","WR","TE","K"]
 years = [2022,2021,2020,2019,2018]
@@ -131,6 +137,7 @@ def render_search():
             return render_template('search.html', players=players_info,search=search,player_names=player_names)
         table = get_player(text)[0]
         name = get_player(text)[1]
+        results = prediction(name)
         # If the player wasnt found, an empty table is created, display player not found message.
         if table.empty:
             error = True
@@ -139,7 +146,7 @@ def render_search():
             return render_template('search.html', error=error, err_message=err_message,players=players_info,search=search,player_names=player_names)
         else:
             search = True
-            return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names)
+            return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results)
     else:
         search=False
         return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names)
@@ -170,6 +177,82 @@ def get_top_10():
 
     players_info = [{'Name': player, 'Position': position, 'Team': team, 'Points':points, 'Rank':rank} for player, position, team, points, rank in zip(players_list, positions_list, teams_list,points_list, rank_list)]
     return players_info
+
+def get_team(name):
+    table, id = get_player(name)
+    data = preprocessing(table)
+    return data['Tm'][0]
+
+def get_opp(team):
+    sched = pd.read_csv('./data/2023_schedule.csv')
+    new_df = sched.query('Home == @team or Away == @team')
+    opp = 'Bye Week'
+    if new_df.query('Home == @team').empty:
+        opp = new_df['Home'].item()
+    else:
+        opp = new_df['Away'].item()
+    return opp
+
+def create_pred_table(name):
+    sched = pd.read_csv('./data/2023_schedule.csv')
+    team = get_team(name)
+    opp = get_opp(team)
+    opponent = 'Opp_' + opp
+    week = sched['G#'][0].item()
+    pred_dict = {'G#': [week], opponent: [1.0]}
+    pred_table = pd.DataFrame(pred_dict)
+    not_playing = np.zeros(1)
+    for i in teams:
+        if 'Opp_' + i not in pred_table.columns:
+            pred_table['Opp_' + i] = not_playing
+    print(pred_table)
+    return pred_table
+
+def preprocessing(player_table):
+    #get the table
+    df = player_table
+    #remove unneeded columns from a higher level
+    table = df.drop(['Inside 20', 'Inside 10', 'Snap Counts'], axis=1)
+    #make only one level of column names
+    table.columns = table.columns.get_level_values(-1)
+    #drop columns not needed for training
+    tab = table.drop(['Date', 'Pos', 'DKPt', 'FDPt', 'Home/Away',  'Result'], axis=1)
+    drop = tab.shape
+    #drop totals column
+    data = tab.drop(index=(drop[0] - 1))
+    #one hot encode opponent column
+    encoder = OneHotEncoder()
+    onehotarray = encoder.fit_transform(data[['Opp']]).toarray()
+    items = [f'{"Opp"}_{item}' for item in encoder.categories_[0]]
+    data[items] = onehotarray
+    data = data.drop('Opp', axis=1)
+    #add missing opponents to have all teams in the dataframe
+    teams_unplayed = np.zeros(drop[0] - 1)
+    for i in teams:
+        if 'Opp_' + i not in data.columns:
+            data['Opp_' + i] = teams_unplayed
+    return data
+
+def prediction(name):
+    table, pid = get_player(name)
+    train = preprocessing(table)
+    train_data = train.drop('Tm', axis=1)
+    pred_data = create_pred_table(name)
+    y_train = train_data['FantPt'].values
+    X_train = train_data.drop('FantPt', axis=1).values
+    lm_r = Ridge(alpha=10).fit(X_train, y_train)
+    lm_l = Lasso().fit(X_train, y_train)
+    lm_en = ElasticNet().fit(X_train, y_train)
+    ridge_pred = lm_r.predict(pred_data)[0]
+    lasso_pred = lm_l.predict(pred_data)[0]
+    elastic_net_pred = lm_en.predict(pred_data)[0]
+    ridge_str = 'Ridge model: ' + str(ridge_pred)
+    lasso_str = 'Lasso model: ' + str(lasso_pred)
+    elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred)
+    results_str = '\n'.join([ridge_str, lasso_str, elastic_net_str])
+    return results_str
+    # return (ridge_pred, lasso_pred, elastic_net_pred)
+
 
 @app.route('/tables')
 @app.route('/tables', methods=['GET', 'POST'])

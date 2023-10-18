@@ -81,7 +81,10 @@
             <h2>Results for {{ name }}</h2>
             {% endif %}
             <div class="resTable">
-                {% for table in tables %}
+                {% for res in results.splitlines() %}
+                <h1>{{res}}</h1>
+                {% endfor %}
+                <!-- {% for table in tables %}
                 <table class="playerTable">
                     <thead>
                         <tr>
@@ -94,7 +97,7 @@
                         {{table | safe}}
                     </tbody>
                 </table>
-                {% endfor %}
+                {% endfor %} -->
             </div>
         </div>
         {% endif %}
