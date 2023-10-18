@@ -18,9 +18,17 @@ teams = [
 positions=["RB","QB","WR","TE","K"]
 years = [2022,2021,2020,2019,2018]
 
+
+
 def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
     return pd.read_csv(csv_file, index_col=None)
+
+player_df = load_dataframe(2022)
+player_df['Player'] = player_df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
+player_names = player_df['Player'].tolist()
+# player_names = ["name1", "name2", "name3"]
+
 
 @app.route('/tables')
 @app.route('/tables', methods=['GET', 'POST'])
@@ -120,7 +128,7 @@ def render_search():
         # If the text is blank just re render the home page fixes error.
         if text == "":
             search=False
-            return render_template('search.html', players=players_info,search=search)
+            return render_template('search.html', players=players_info,search=search,player_names=player_names)
         table = get_player(text)[0]
         name = get_player(text)[1]
         # If the player wasnt found, an empty table is created, display player not found message.
@@ -128,13 +136,13 @@ def render_search():
             error = True
             search = True
             err_message = f"{name} not found, try again"
-            return render_template('search.html', error=error, err_message=err_message,players=players_info,search=search)
+            return render_template('search.html', error=error, err_message=err_message,players=players_info,search=search,player_names=player_names)
         else:
             search = True
-            return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error)
+            return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names)
     else:
         search=False
-        return render_template('search.html',players=players_info,search=False,error=error)
+        return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names)
 
 def get_top_10():
     url = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'

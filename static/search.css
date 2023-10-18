@@ -177,6 +177,20 @@ table,tbody,td,th,label, #DataTables_Table_1_info{
     background-color: var(--dark-secondary);
     color:var(--dark-text);
 }
+.playerTable{
+    /* display: none; */
+}
+.ui-menu-item .ui-menu-item-wrapper.ui-state-active {
+    background: var(--dark-primary) !important;
+    /* font-weight: bold !important; */
+    color: var(--dark-text) !important;
+    border-right: 1px solid var(--dark-primary);
+    border-left: 1px solid var(--dark-primary);
+
+} 
+/* .ui-menu-item-wrapper:hover{
+    color: var(--dark-primary);
+} */
 /* tbody td{
     color:var(--dark-text)
 } */

@@ -7,31 +7,37 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-    <script text="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script> 
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
     <script>
-        $(document).ready(function() {
+        // $(document).ready(function () {
+        $(document).ready(function () {
+            var availableTags = {{ player_names | tojson | safe }};
+            $("#text").autocomplete({
+                source: availableTags
+            });
             $('.playerTable').DataTable({
                 select: true,
-                scrollX:true,
-                scrollY:true,
-                responsive:true,
+                scrollX: true,
+                scrollY: true,
+                responsive: true,
                 initComplete: function () {
                     // Show the table once DataTables is ready
                     $('.playerTable').css('display', 'table');
                 },
-        });
-        $(document).ready(function() {
-        $('#text').on('keydown', function(event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault(); // Prevent newline in textarea
-                $('form').submit(); // Submit the form
-            }
-        });
-    });
+            });
+            $(document).ready(function () {
+                $('#text').on('keydown', function (event) {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                        event.preventDefault(); // Prevent newline in textarea
+                        $('form').submit(); // Submit the form
+                    }
+                });
+            });
         });
     </script>
 </head>
@@ -55,11 +61,12 @@
                 <h1>Find Your Next Star</h1>
             </div>
             <div class="search-bar">
-                <form method="POST" onsubmit="{{url_for('render_search')}}">
-                <input id="text" name="text" type="text" class="search-term" placeholder="Search for a player">
-                <button type="submit" class="search-btn">
-                    <iconify-icon icon="maki:arrow"></iconify-icon>
-               </button>
+                <form method="POST" action="{{url_for('render_search')}}">
+                    <input id="text" name="text" type="text" class="search-term" placeholder="Search for a player">
+                    <!-- <input id="playerNames"> -->
+                    <button type="submit" class="search-btn">
+                        <iconify-icon icon="maki:arrow"></iconify-icon>
+                    </button>
                 </form>
             </div>
         </div>
@@ -71,7 +78,7 @@
                 <h2>{{ err_message }}</h2>
             </div>
             {% else %}
-                <h2>Results for {{ name }}</h2>
+            <h2>Results for {{ name }}</h2>
             {% endif %}
             <div class="resTable">
                 {% for table in tables %}
@@ -79,7 +86,7 @@
                     <thead>
                         <tr>
                             {% for title in titles %}
-                                <th>{{ title }}</th>
+                            <th>{{ title }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
@@ -87,7 +94,7 @@
                         {{table | safe}}
                     </tbody>
                 </table>
-            {% endfor %}
+                {% endfor %}
             </div>
         </div>
         {% endif %}
@@ -99,23 +106,23 @@
             </div>
             <div class="bottom-feature">
                 {% for player in players %}
-            <div class="inner-feature">
-                <!-- {% for img_url in images %}
+                <div class="inner-feature">
+                    <!-- {% for img_url in images %}
                 <div class="img-background">
                     <img src="{{ img_url }}" alt="Image" width="300" height="200">
                 </div>
             {% endfor %} -->
-            <div class="img-background">
-                <h1>{{player.Rank}}</h1>
-            </div>
-                <div class="player-info">
-                    <h3>{{ player.Name }}</h3>
-                    <p>Position: {{ player.Position }}</p>
-                    <p>Team: {{ player.Team }}</p>
-                    <p>Points: {{ player.Points }}</p>
+                    <div class="img-background">
+                        <h1>{{player.Rank}}</h1>
+                    </div>
+                    <div class="player-info">
+                        <h3>{{ player.Name }}</h3>
+                        <p>Position: {{ player.Position }}</p>
+                        <p>Team: {{ player.Team }}</p>
+                        <p>Points: {{ player.Points }}</p>
+                    </div>
                 </div>
-            </div>
-            {% endfor %}
+                {% endfor %}
             </div>
         </div>
 
