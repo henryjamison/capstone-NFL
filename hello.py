@@ -20,6 +20,8 @@ teams = [
     "NYJ", "PHI", "PIT", "SFO", "SEA", "TAM", "TEN", "WAS"
 ]
 
+curr_week = 7
+
 def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
     return pd.read_csv(csv_file, index_col=None)
@@ -117,19 +119,20 @@ def get_team(name):
     return data['Tm'][0]
 
 def get_opp(team):
-    sched = pd.read_csv('./data/2023_schedule.csv')
-    new_df = sched.query('Home == @team or Away == @team')
+    schedule = pd.read_csv('./data/Schedule.csv')
+    game = schedule.query('Week == (@curr_week) and (Home == @team or Away == @team)')
     opp = 'Bye Week'
-    if new_df.query('Home == @team').empty:
-        opp = new_df['Home'].item()
+    if game.query('Home == @team').empty:
+        opp = game['Home'].item()
     else:
-        opp = new_df['Away'].item()
+        opp = game['Away'].item()
     return opp
 
 def create_pred_table(name):
     sched = pd.read_csv('./data/2023_schedule.csv')
     team = get_team(name)
     opp = get_opp(team)
+    #if opp = bye week have a way to print that they are on the bye week
     opponent = 'Opp_' + opp
     week = sched['G#'][0].item()
     pred_dict = {'G#': [week], opponent: [1.0]}
