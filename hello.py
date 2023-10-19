@@ -124,8 +124,10 @@ def get_opp(team):
     opp = 'Bye Week'
     if game.query('Home == @team').empty:
         opp = game['Home'].item()
-    else:
+    elif game.query('Away == @team').empty:
         opp = game['Away'].item()
+    else:
+        opp = 'Bye Week'
     return opp
 
 def create_pred_table(name):
