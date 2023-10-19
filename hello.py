@@ -149,14 +149,18 @@ def render_search():
             loading = False
             err_message = f"{name} not found, try again"
             return render_template('search.html', error=error, err_message=err_message,players=players_info,search=search,player_names=player_names,loading=loading)
+        # If the Player is on a bye week, results will be "", so display that the player is on a bye week.
         elif results == '':
             bye = True
             bye_message = f'{name} is on a Bye Week'
             search = True
             return render_template('search.html',players=players_info,search=search,error=error, player_names=player_names, bye=bye, bye_message=bye_message, results=results)
+        #Player is found enter loop
         else:
+            # If the player is out, dont print any predictions just display status.
             if status == "Out" or status == "Injured Reserve":
                 return render_template('search.html', error=error,players=players_info,search=True,player_names=player_names,status=status,name=name,results="")
+            # Player is healthy and prediction is found, display as usual.
             else:
                 search = True
                 loading = False
@@ -306,6 +310,7 @@ def filter_data():
 
     return render_template('tables.html', filtered_data=df.to_html())
 
+# Gets Injured Player list and drops columns column
 def getInjuredPlayers():
     espn_url = 'https://www.espn.com/nfl/injuries'
     espn_df = pd.read_html(espn_url)
@@ -316,6 +321,8 @@ def getInjuredPlayers():
     merged_df = merged_df.reset_index(drop=True)
     return merged_df
 
+# Returns status of the player if theyre in the data frame,
+# Return Healthy if the player isnt on the injured list.
 def getPlayerStatus(name):
     injured_df = getInjuredPlayers()
     player_row = injured_df[injured_df['NAME'] == name]
