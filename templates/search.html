@@ -15,7 +15,6 @@
         src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
     <script>
-        // $(document).ready(function () {
         $(document).ready(function () {
             var availableTags = {{ player_names | tojson | safe
         }};
@@ -103,7 +102,7 @@
             </div>
             {% else %}
             <h2>Results for {{ name }}</h2>
-            {% endif %}
+            <h2>Status for {{name}}: {{ status }}</h2>
             <div class="resTable">
                 {% for res in results.splitlines() %}
                 <h1>{{res}}</h1>
@@ -123,6 +122,7 @@
                 </table>
                 {% endfor %} -->
             </div>
+            {% endif %}
         </div>
         {% endif %}
 

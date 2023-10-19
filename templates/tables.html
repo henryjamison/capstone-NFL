@@ -58,8 +58,10 @@
     <div class="container">
         <div id="header">
             <div class="left-header">
-                <img id="logo" src="../static/fantasy-logo.png" alt="Fantasy Foresight Logo">
-                <h1 id="logo-text">Fantasy Foresight</h1>
+                <a id="logo-link" href="{{url_for('render_home')}}">
+                    <img id="logo" src="../static/fantasy-logo.png" alt="">
+                    <h1 id="logo-text">Fantasy Foresight</h1>
+                </a>
             </div>
             <div class="links">
                 <a class="link" href="{{url_for('render_home')}}">Home</a>

@@ -28,10 +28,12 @@ def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
     return pd.read_csv(csv_file, index_col=None)
 
-player_df = load_dataframe(2022)
-player_df['Player'] = player_df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
-player_names = player_df['Player'].tolist()
-# player_names = ["name1", "name2", "name3"]
+# player_df = load_dataframe(2022)
+updated_fantasy_url_2023 = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
+player_df = pd.read_html(updated_fantasy_url_2023)[0]
+player_df[('Unnamed: 1_level_0', 'Player')] = player_df[('Unnamed: 1_level_0', 'Player')].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
+player_df = player_df[player_df[('Unnamed: 1_level_0', 'Player')] != 'Player']
+player_names = player_df[('Unnamed: 1_level_0', 'Player')].tolist()
 
 
 @app.route('/tables')
@@ -70,7 +72,7 @@ def render_home():
 
 # @app.route('/home')
 def get_player(name):
-    df = pd.read_csv('./data/2022_fantasy.csv')
+    df = pd.read_csv('./data/2023_fantasy.csv')
     df['Player'] = df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
     # print("PLAYER NAME: " + name)
     name_lower = name.lower()
@@ -88,7 +90,7 @@ def get_player(name):
     return player_table, ret_name
 
 def get_fant_table(player_id):
-    url = 'https://www.pro-football-reference.com/players/' + player_id[0] + '/' + player_id + '/' + 'fantasy/2022/'
+    url = 'https://www.pro-football-reference.com/players/' + player_id[0] + '/' + player_id + '/' + 'fantasy/2023/'
     print(url)
     table = pd.read_html(url)[0]
     # print(table.to_html())
@@ -126,7 +128,6 @@ def render_search():
     players_info = get_top_10()
     error =False
     bye = False
-    bye_message = 'Player is on a Bye Week'
     # print(players_info)
     if request.method == 'POST':
         # Retrieve the text from the textarea
@@ -137,10 +138,10 @@ def render_search():
             return render_template('search.html', players=players_info,search=search,player_names=player_names)
         table = get_player(text)[0]
         name = get_player(text)[1]
+        status = getPlayerStatus(name)
+        print(status)
         loading = True
         results = prediction(name)
-        if results == '':
-            bye = True
         # If the player wasnt found, an empty table is created, display player not found message.
         if table.empty:
             error = True
@@ -148,13 +149,21 @@ def render_search():
             loading = False
             err_message = f"{name} not found, try again"
             return render_template('search.html', error=error, err_message=err_message,players=players_info,search=search,player_names=player_names,loading=loading)
-        else:
+        elif results == '':
+            bye = True
+            bye_message = f'{name} is on a Bye Week'
             search = True
-            loading = False
-            return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading)
+            return render_template('search.html',players=players_info,search=search,error=error, player_names=player_names, bye=bye, bye_message=bye_message, results=results)
+        else:
+            if status == "Out" or status == "Injured Reserve":
+                return render_template('search.html', error=error,players=players_info,search=True,player_names=player_names,status=status,name=name,results="")
+            else:
+                search = True
+                loading = False
+                return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading,status=status)
     else:
         search=False
-        return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names, bye=bye, bye_message=bye_message)
+        return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names)
 
 def get_top_10():
     url = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
@@ -191,7 +200,8 @@ def get_team(name):
 def get_opp(team):
     schedule = pd.read_csv('./data/Schedule.csv')
     game = schedule.query('Week == (@curr_week) and (Home == @team or Away == @team)')
-    opp = 'Bye Week'
+    # opp = 'Bye Week'
+    print(game)
     if game.query('Home == @team').empty and game.query('Away == @team').empty:
         opp = 'Bye Week'
     elif game.query('Home == @team').empty:
@@ -205,7 +215,7 @@ def create_pred_table(name):
     team = get_team(name)
     opp = get_opp(team)
     if opp == 'Bye Week':
-        return 0
+        return pd.DataFrame()
     else:
         opponent = 'Opp_' + opp
         week = sched['G#'][0].item()
@@ -220,12 +230,14 @@ def create_pred_table(name):
 def preprocessing(player_table):
     #get the table
     df = player_table
+    if df.empty:
+        return pd.DataFrame()
     #remove unneeded columns from a higher level
-    table = df.drop(['Inside 20', 'Inside 10', 'Snap Counts'], axis=1)
+    table = df.drop(['Inside 20', 'Inside 10', 'Snap Counts'], axis=1, errors='ignore')
     #make only one level of column names
     table.columns = table.columns.get_level_values(-1)
     #drop columns not needed for training
-    tab = table.drop(['Date', 'Pos', 'DKPt', 'FDPt', 'Home/Away',  'Result'], axis=1)
+    tab = table.drop(['Date', 'Pos', 'DKPt', 'FDPt', 'Home/Away',  'Result'], axis=1, errors='ignore')
     drop = tab.shape
     #drop totals column
     data = tab.drop(index=(drop[0] - 1))
@@ -245,9 +257,11 @@ def preprocessing(player_table):
 def prediction(name):
     table, pid = get_player(name)
     train = preprocessing(table)
+    if train.empty:
+        return ''
     train_data = train.drop('Tm', axis=1)
     pred_data = create_pred_table(name)
-    if pred_data == 0:
+    if pred_data.empty:
         return ''
     else:
         y_train = train_data['FantPt'].values
@@ -256,11 +270,14 @@ def prediction(name):
         lm_l = Lasso().fit(X_train, y_train)
         lm_en = ElasticNet().fit(X_train, y_train)
         ridge_pred = lm_r.predict(pred_data)[0]
+        ridge_pred_rounded = np.around(ridge_pred, decimals=2)
         lasso_pred = lm_l.predict(pred_data)[0]
+        lasso_pred_rounded = np.around(lasso_pred, decimals=2)
         elastic_net_pred = lm_en.predict(pred_data)[0]
-        ridge_str = 'Ridge model: ' + str(ridge_pred)
-        lasso_str = 'Lasso model: ' + str(lasso_pred)
-        elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred)
+        elastic_net_pred_rounded = np.around(elastic_net_pred, decimals=2)
+        ridge_str = 'Ridge model: ' + str(ridge_pred_rounded)
+        lasso_str = 'Lasso model: ' + str(lasso_pred_rounded)
+        elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred_rounded)
         results_str = '\n'.join([ridge_str, lasso_str, elastic_net_str])
         return results_str
         #return (ridge_pred, lasso_pred, elastic_net_pred)
@@ -288,6 +305,24 @@ def filter_data():
         df = df[df['FantPos'] == position]
 
     return render_template('tables.html', filtered_data=df.to_html())
+
+def getInjuredPlayers():
+    espn_url = 'https://www.espn.com/nfl/injuries'
+    espn_df = pd.read_html(espn_url)
+    merged_df = pd.concat(espn_df)
+    merged_df = merged_df.drop('COMMENT', axis=1)
+    merged_df = merged_df.reset_index(drop=True)
+    merged_df = merged_df[merged_df['POS'].isin(positions)]
+    merged_df = merged_df.reset_index(drop=True)
+    return merged_df
+
+def getPlayerStatus(name):
+    injured_df = getInjuredPlayers()
+    player_row = injured_df[injured_df['NAME'] == name]
+    if not player_row.empty:
+        return player_row['STATUS'].values[0]
+    else:
+        return "Healthy"
 
 # def getPlayerURL(url):
 #     player_url_list = []

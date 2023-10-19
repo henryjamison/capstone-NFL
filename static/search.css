@@ -185,9 +185,15 @@ table,tbody,td,th,label, #DataTables_Table_1_info{
     /* font-weight: bold !important; */
     color: var(--dark-text) !important;
     border: 1px solid var(--dark-primary);
+    overflow: scroll;
     /* border-right: 1px solid var(--dark-primary);
     border-left: 1px solid var(--dark-primary); */
-
+} 
+.ui-autocomplete {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 20px;
 } 
 /* .ui-menu-item-wrapper:hover{
     color: var(--dark-primary);

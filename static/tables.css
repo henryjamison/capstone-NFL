@@ -107,6 +107,13 @@ input:focus{
 form{
   display: flex;
 }
+#logo-link{
+  all: unset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
 
 /* table {
     border-collapse: collapse;
