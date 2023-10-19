@@ -159,12 +159,17 @@ def render_search():
         else:
             # If the player is out, dont print any predictions just display status.
             if status == "Out" or status == "Injured Reserve":
-                return render_template('search.html', error=error,players=players_info,search=True,player_names=player_names,status=status,name=name,results="")
+                color = "Red"
+                return render_template('search.html', error=error,players=players_info,search=True,player_names=player_names,status=status,name=name,results="",color=color)
             # Player is healthy and prediction is found, display as usual.
             else:
+                if status == "Questionable":
+                    color = "Orange"
+                else:
+                    color = "Green"
                 search = True
                 loading = False
-                return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading,status=status)
+                return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading,status=status,color=color)
     else:
         search=False
         return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names)

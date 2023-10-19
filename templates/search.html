@@ -102,7 +102,10 @@
             </div>
             {% else %}
             <h2>Results for {{ name }}</h2>
-            <h2>Status for {{name}}: {{ status }}</h2>
+            <div class="status">
+                <h2>Status for {{name}}: {{ status }}</h2>
+                <div class="status-circle" style="background-color: {{ color }};"></div>
+            </div>
             <div class="resTable">
                 {% for res in results.splitlines() %}
                 <h1>{{res}}</h1>

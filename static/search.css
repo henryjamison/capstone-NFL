@@ -228,3 +228,13 @@ table,tbody,td,th,label, #DataTables_Table_1_info{
     align-items: center;
     cursor: pointer;
 }
+.status-circle{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: 10px;
+}
+.status{
+    display: flex;
+    align-items: center;
+}
