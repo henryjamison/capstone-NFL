@@ -1,8 +1,6 @@
 from flask import *
-from bs4 import BeautifulSoup
 import numpy as np
 import pandas as pd
-import requests
 from sklearn.preprocessing import OneHotEncoder
 import warnings
 from sklearn.linear_model import Ridge
@@ -24,7 +22,7 @@ teams = [
 positions=["RB","QB","WR","TE","K"]
 years = [2022,2021,2020,2019,2018]
 
-
+curr_week = 7
 
 def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
@@ -187,13 +185,15 @@ def get_team(name):
     return data['Tm'][0]
 
 def get_opp(team):
-    sched = pd.read_csv('./data/2023_schedule.csv')
-    new_df = sched.query('Home == @team or Away == @team')
+    schedule = pd.read_csv('./data/Schedule.csv')
+    game = schedule.query('Week == (@curr_week) and (Home == @team or Away == @team)')
     opp = 'Bye Week'
-    if new_df.query('Home == @team').empty:
-        opp = new_df['Home'].item()
+    if game.query('Home == @team').empty:
+        opp = game['Home'].item()
+    elif game.query('Away == @team').empty:
+        opp = game['Away'].item()
     else:
-        opp = new_df['Away'].item()
+        opp = 'Bye Week'
     return opp
 
 def create_pred_table(name):
