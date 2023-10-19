@@ -97,6 +97,10 @@
             <div class="message">
                 <h2>{{ err_message }}</h2>
             </div>
+            {% elif bye %}
+            <div class="message">
+                <h2>{{ bye_message }}</h2>
+            </div>
             {% else %}
             <h2>Results for {{ name }}</h2>
             {% endif %}

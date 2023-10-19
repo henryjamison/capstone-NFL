@@ -125,6 +125,8 @@ def get_fant_table(player_id):
 def render_search():
     players_info = get_top_10()
     error =False
+    bye = False
+    bye_message = 'Player is on a Bye Week'
     # print(players_info)
     if request.method == 'POST':
         # Retrieve the text from the textarea
@@ -137,6 +139,8 @@ def render_search():
         name = get_player(text)[1]
         loading = True
         results = prediction(name)
+        if results == '':
+            bye = True
         # If the player wasnt found, an empty table is created, display player not found message.
         if table.empty:
             error = True
@@ -150,7 +154,7 @@ def render_search():
             return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading)
     else:
         search=False
-        return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names)
+        return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names, bye=bye, bye_message=bye_message)
 
 def get_top_10():
     url = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
@@ -188,27 +192,30 @@ def get_opp(team):
     schedule = pd.read_csv('./data/Schedule.csv')
     game = schedule.query('Week == (@curr_week) and (Home == @team or Away == @team)')
     opp = 'Bye Week'
-    if game.query('Home == @team').empty:
+    if game.query('Home == @team').empty and game.query('Away == @team').empty:
+        opp = 'Bye Week'
+    elif game.query('Home == @team').empty:
         opp = game['Home'].item()
     elif game.query('Away == @team').empty:
         opp = game['Away'].item()
-    else:
-        opp = 'Bye Week'
     return opp
 
 def create_pred_table(name):
     sched = pd.read_csv('./data/2023_schedule.csv')
     team = get_team(name)
     opp = get_opp(team)
-    opponent = 'Opp_' + opp
-    week = sched['G#'][0].item()
-    pred_dict = {'G#': [week], opponent: [1.0]}
-    pred_table = pd.DataFrame(pred_dict)
-    not_playing = np.zeros(1)
-    for i in teams:
-        if 'Opp_' + i not in pred_table.columns:
-            pred_table['Opp_' + i] = not_playing
-    return pred_table
+    if opp == 'Bye Week':
+        return 0
+    else:
+        opponent = 'Opp_' + opp
+        week = sched['G#'][0].item()
+        pred_dict = {'G#': [week], opponent: [1.0]}
+        pred_table = pd.DataFrame(pred_dict)
+        not_playing = np.zeros(1)
+        for i in teams:
+            if 'Opp_' + i not in pred_table.columns:
+                pred_table['Opp_' + i] = not_playing
+        return pred_table
 
 def preprocessing(player_table):
     #get the table
@@ -240,20 +247,23 @@ def prediction(name):
     train = preprocessing(table)
     train_data = train.drop('Tm', axis=1)
     pred_data = create_pred_table(name)
-    y_train = train_data['FantPt'].values
-    X_train = train_data.drop('FantPt', axis=1).values
-    lm_r = Ridge(alpha=10).fit(X_train, y_train)
-    lm_l = Lasso().fit(X_train, y_train)
-    lm_en = ElasticNet().fit(X_train, y_train)
-    ridge_pred = lm_r.predict(pred_data)[0]
-    lasso_pred = lm_l.predict(pred_data)[0]
-    elastic_net_pred = lm_en.predict(pred_data)[0]
-    ridge_str = 'Ridge model: ' + str(ridge_pred)
-    lasso_str = 'Lasso model: ' + str(lasso_pred)
-    elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred)
-    results_str = '\n'.join([ridge_str, lasso_str, elastic_net_str])
-    return results_str
-    # return (ridge_pred, lasso_pred, elastic_net_pred)
+    if pred_data == 0:
+        return ''
+    else:
+        y_train = train_data['FantPt'].values
+        X_train = train_data.drop('FantPt', axis=1).values
+        lm_r = Ridge(alpha=10).fit(X_train, y_train)
+        lm_l = Lasso().fit(X_train, y_train)
+        lm_en = ElasticNet().fit(X_train, y_train)
+        ridge_pred = lm_r.predict(pred_data)[0]
+        lasso_pred = lm_l.predict(pred_data)[0]
+        elastic_net_pred = lm_en.predict(pred_data)[0]
+        ridge_str = 'Ridge model: ' + str(ridge_pred)
+        lasso_str = 'Lasso model: ' + str(lasso_pred)
+        elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred)
+        results_str = '\n'.join([ridge_str, lasso_str, elastic_net_str])
+        return results_str
+        #return (ridge_pred, lasso_pred, elastic_net_pred)
 
 
 @app.route('/tables')
