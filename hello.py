@@ -74,7 +74,7 @@ def render_home():
 def get_player(name):
     df = pd.read_csv('./data/2022_fantasy.csv')
     df['Player'] = df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
-    print("PLAYER NAME: " + name)
+    # print("PLAYER NAME: " + name)
     name_lower = name.lower()
     player = df[df['Player'].str.lower() == name_lower]
     if (player.empty):
@@ -137,16 +137,19 @@ def render_search():
             return render_template('search.html', players=players_info,search=search,player_names=player_names)
         table = get_player(text)[0]
         name = get_player(text)[1]
+        loading = True
         results = prediction(name)
         # If the player wasnt found, an empty table is created, display player not found message.
         if table.empty:
             error = True
             search = True
+            loading = False
             err_message = f"{name} not found, try again"
-            return render_template('search.html', error=error, err_message=err_message,players=players_info,search=search,player_names=player_names)
+            return render_template('search.html', error=error, err_message=err_message,players=players_info,search=search,player_names=player_names,loading=loading)
         else:
             search = True
-            return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results)
+            loading = False
+            return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading)
     else:
         search=False
         return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names)
@@ -205,7 +208,6 @@ def create_pred_table(name):
     for i in teams:
         if 'Opp_' + i not in pred_table.columns:
             pred_table['Opp_' + i] = not_playing
-    print(pred_table)
     return pred_table
 
 def preprocessing(player_table):
@@ -261,7 +263,7 @@ def filter_data():
     team = request.form.get('selected_team')
     position = request.form.get('selected_positon')
     year = request.form.get('selected_year')
-    print(team,position,year)
+    # print(team,position,year)
     # filtered_data = data
     if year is None:
         year = session.get('selected_year', 2022)  # Get the selected year from the session or default to 2022

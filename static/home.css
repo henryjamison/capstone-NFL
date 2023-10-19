@@ -227,6 +227,14 @@ a.link:hover{
 form{
     display: flex;
 }
+
+#logo-link{
+    all: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
 /* .search-term:active{
     outline: none;
 } */

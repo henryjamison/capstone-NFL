@@ -11,34 +11,48 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
     <script>
         // $(document).ready(function () {
         $(document).ready(function () {
-            var availableTags = {{ player_names | tojson | safe }};
-            $("#text").autocomplete({
-                source: availableTags
-            });
-            $('.playerTable').DataTable({
-                select: true,
-                scrollX: true,
-                scrollY: true,
-                responsive: true,
-                initComplete: function () {
-                    // Show the table once DataTables is ready
-                    $('.playerTable').css('display', 'table');
-                },
-            });
-            $(document).ready(function () {
-                $('#text').on('keydown', function (event) {
-                    if (event.key === "Enter" && !event.shiftKey) {
-                        event.preventDefault(); // Prevent newline in textarea
-                        $('form').submit(); // Submit the form
-                    }
-                });
+            var availableTags = {{ player_names | tojson | safe
+        }};
+        showLoadingAnimation();
+        $("#text").autocomplete({
+            source: availableTags
+        });
+        $('.playerTable').DataTable({
+            select: true,
+            scrollX: true,
+            scrollY: true,
+            responsive: true,
+            initComplete: function () {
+                // Show the table once DataTables is ready
+                $('.playerTable').css('display', 'table');
+            },
+        });
+        $(document).ready(function () {
+            $('#text').on('keydown', function (event) {
+                if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault(); // Prevent newline in textarea
+                    $('form').submit(); // Submit the form
+                }
             });
         });
+        });
+        function showLoadingAnimation() {
+            document.getElementById("loading").style.display = "block";
+        }
+
+        function hideLoadingAnimation() {
+            document.getElementById("loading").style.display = "none";
+        }
+        window.onload = function () {
+            // Your code to run after the page and all assets are fully loaded
+            hideLoadingAnimation(); // Hide your loading animation here
+        };
     </script>
 </head>
 
@@ -46,8 +60,10 @@
     <div class="container">
         <div id="header">
             <div class="left-header">
+                <a id="logo-link" href="{{url_for('render_home')}}">
                 <img id="logo" src="../static/fantasy-logo.png" alt="">
                 <h1 id="logo-text">Fantasy Foresight</h1>
+                </a>
             </div>
             <div class="links">
                 <a class="link" href="{{url_for('render_home')}}">Home</a>
@@ -58,7 +74,7 @@
 
         <div class="search">
             <div class="search-text">
-                <h1>Find Your Next Star</h1>
+                <h1>Search For a Player</h1>
             </div>
             <div class="search-bar">
                 <form method="POST" action="{{url_for('render_search')}}">
@@ -70,6 +86,10 @@
                 </form>
             </div>
         </div>
+        <div id="loading" class="loading-spinner"></div>
+        <!-- <div id="loading" class="loading-spinner"
+            style="{% if loading %} display: block {% else %} display: none {% endif %};">
+        </div> -->
 
         {% if search %}
         <div class="features">

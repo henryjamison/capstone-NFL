@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-    <script text="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <!-- <script text="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script> -->
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>    
     <script>
@@ -40,8 +40,10 @@
     <div class="container">
         <div id="header">
             <div class="left-header">
+                <a id="logo-link" href="{{url_for('render_home')}}">
                 <img id="logo" src="../static/fantasy-logo.png" alt="">
                 <h1 id="logo-text">Fantasy Foresight</h1>
+                </a>
             </div>
             <div class="links">
                 <a class="link" href="{{url_for('render_home')}}">Home</a>
