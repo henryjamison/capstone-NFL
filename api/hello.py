@@ -6,6 +6,8 @@ import warnings
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
 from sklearn.linear_model import ElasticNet
+import requests
+from bs4 import BeautifulSoup
 warnings.filterwarnings("ignore")
 
 
@@ -27,6 +29,17 @@ curr_week = 7
 def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
     return pd.read_csv(csv_file, index_col=None)
+
+def load_csv_from_github():
+    github_url_2023_csv = 'https://raw.githubusercontent.com/henryjamison/capstone-NFL/UI/data/2023_fantasy.csv'
+    response = requests.get(github_url_2023_csv)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    text = soup.get_text()
+    text = text.split('\n')
+    split_data = [row.split(",") for row in text]
+    df = pd.DataFrame(split_data, columns=split_data[0])
+    df = df.drop(0)
+    return df
 
 # player_df = load_dataframe(2022)
 updated_fantasy_url_2023 = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
@@ -72,7 +85,9 @@ def render_home():
 
 # @app.route('/home')
 def get_player(name):
-    df = pd.read_csv('./data/2023_fantasy.csv')
+    # df = pd.read_csv('./data/2023_fantasy.csv')
+    df = load_csv_from_github()
+    print(df)
     df['Player'] = df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
     # print("PLAYER NAME: " + name)
     name_lower = name.lower()
