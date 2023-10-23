@@ -1,6 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Roboto:ital,wght@0,300;0,500;1,500&display=swap');
-
-
 :root{
     --dark-bg: #020C22;
     --dark-primary: #1954D1;
@@ -9,9 +7,21 @@
     --dark-text: #F0F5FE;
     font-family: Roboto;
 }
-@media screen and (max-width:600px){
+@media screen and (max-width:900px){
+    .why-us{
+        flex-direction: column;
+    }
+    .why-us-right, .left-feature{
+        width: 90% !important;
+        /* text-align: center; */
+    }
+    .left-feature{
+
+    }
+}
+@media screen and (max-width:700px){
     body{
-        min-width: 600px;
+        min-width: 700px;
     }
     .left-feature{
         display: none;
@@ -19,32 +29,20 @@
     .top,.bottom{
         flex-direction: column;
         align-items: start;
+        width: 100%;
     }
-}
-
-@keyframes kick {
-    0% {
-        transform: translateX(0) rotate(0deg);
+    .why-us-right{
+        width: 100% !important;
+        margin-left: 0px !important;
     }
-    25% {
-        transform: translateX(50px) rotate(45deg);
-        transform: translateY(50px) rotate(45deg);
+    .links{
+        gap: 15px !important;
+        flex-direction: column;
+        align-items: flex-start !important;
     }
-    50% {
-        transform: translateX(100px) rotate(90deg);
+    .features{
+        flex-direction: row;
     }
-    75% {
-        transform: translateX(50px) rotate(135deg);
-    }
-    100% {
-        transform: translateX(0) rotate(180deg);
-    }
-}
-
-.football-animation {
-    animation: kick 3s infinite;
-    height: 100px;
-    width: 100px;
 }
 #logo{
     padding: 1em;
@@ -60,7 +58,6 @@
     margin-left: 1em;
     align-items: center;
 }
-
 body{
     all: unset;
     background-color: var(--dark-bg);
@@ -137,11 +134,14 @@ a.link:hover{
     margin-bottom: 5%;
     padding: 2em;
 }
+/* .features .left-feature{
+    width: 300px;
+} */
 .left-feature{
     text-align: start;
     font-style: normal;
     font-weight: 700;
-    width: 300px;
+    width: 25%;
 }
 .right-feature{
     display: flex;
@@ -178,15 +178,24 @@ a.link:hover{
     padding: 2em;
     margin-bottom: 5%;
 }
+.why-us-right{
+    width: 75%;
+    margin-left: 5em;
+}
 .top,.bottom{
     display: flex;
     flex-direction: row;
     align-items: center;
     margin: 1em;
+    width: 100%;
 }
-.why-us-text{
+.why-us-section{
     display: flex;
     flex-direction: column;
+    width: 80%;
+}
+.why-us-text{
+    max-width: 75%;
 }
 .why{
     margin-right: 1em;
@@ -235,76 +244,3 @@ form{
     align-items: center;
     cursor: pointer;
 }
-/* .search-term:active{
-    outline: none;
-} */
-/* 
-body{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.container{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin: 10px;
-    padding: 5px;
-}
-form{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin: 1em;
-}   
-.hvr-glow {
-    padding: 5px;
-    border-radius: 1em;
-    background-color: rgb(188, 188, 255);
-    color: rgb(48, 48, 182);
-    border: none;
-    height: 25px;
-    width: 80px;
-    vertical-align: middle;
-    -webkit-transform: perspective(1px) translateZ(0);
-    transform: perspective(1px) translateZ(0);
-    box-shadow: 0 0 1px rgba(188, 188, 255,0);
-    -webkit-transition-duration: 0.3s;
-    transition-duration: 0.3s;
-    -webkit-transition-property: box-shadow;
-    transition-property: box-shadow;
-    margin-left: 10px;
-  }
-.hvr-glow:hover, .hvr-glow:focus, .hvr-glow:active {
-    box-shadow: 0 0 8px rgba(153, 153, 246, 0.6);;
-    cursor: pointer;
-}  
-a{
-    margin: 1em;
-    font-size: 30px;
-    color: black;
-    text-decoration: none;
-}
-a:hover{
-    text-decoration: underline;
-}
-
-#DataTables_Table_0_wrapper{
-    display: none;
-}
-.playerTable tbody tr:hover{
-    background-color: lightgoldenrodyellow;
-}
-.resTable{
-    zoom: 55%;
-}
-h3{
-    margin-right: 10px;
-}
-div.links{
-    display: flex;
-    border-bottom: 1px solid black;
-    width: 100vw;
-    justify-content: center;
-} */

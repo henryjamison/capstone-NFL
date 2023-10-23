@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Tables</title>
+    <link rel="icon" href="../static/fantasy-logo.png" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="../static/tables.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
@@ -16,6 +17,7 @@
                 scrollY:true,
                 responsive:true,
                 initComplete: function () {
+                    console.log('Waiting');
                     // Show the table once DataTables is ready
                     $('.myTable').css('display', 'table');
                 },
@@ -49,7 +51,11 @@
             $('#yearDropdown').val(selectedYear);
             $('#teamDropdown').val(selectedTeam);
             $('#positionDropdown').val(selectedPosition);
+            window.onload = function () {
+                console.log('Waitingggg');
 
+                $('.myTable').css('display', 'table');
+        };
         });
     </script>
     
@@ -71,7 +77,7 @@
         </div>
 
         <div class="dropdown">
-        <form method="POST" action="{{url_for('filter_data')}}">
+        <form method="POST" action="{{url_for('render_tables')}}">
             <div class="dropdown-item" id="filter-form">
                 <label class="above" for="teamDropdown">NFL Team</label>
                 <select class="above" id="teamDropdown" name="selected_team">
@@ -83,7 +89,7 @@
             </div>
             <div class="dropdown-item">
                 <label class="above" for="positionDropdown">Position</label>
-                <select class="above" id="positionDropdown" name="selected_postion">
+                <select class="above" id="positionDropdown" name="selected_positon">
                     <option value=""> Select Position </option>
                     {% for pos in positions %}
                         <option value="{{ pos }}">{{ pos }}</option>
@@ -92,14 +98,14 @@
             </div>  
             <div class="dropdown-item">
                 <label class="above" for="yearDropdown">Year</label>
-                <select class="above" id="yearDropdown" name="selected_year">
+                <select class="above" id="yearDropdown" name="selected_year" required>
                     <option value=""> Select Year </option>
                     {% for year in years %}
                         <option value="{{ year }}">{{ year }}</option>
                     {% endfor %}
                 </select>
             </div> 
-            <button type="submit">
+            <button class="sub-btn" type="submit">
                 Filter
             </button>
         </form>

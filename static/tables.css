@@ -8,6 +8,19 @@
   --dark-text: #F0F5FE;
   font-family: Roboto;
 }
+
+@media screen and (max-width:620px){
+  form{
+    flex-direction: column;
+  }
+  .dropdown-item{
+    margin: .5em !important;
+  }
+  .sub-btn{
+    margin-top: 1em !important;
+  }
+}
+
 #logo{
   padding: 1em;
   height: 100px;
@@ -72,9 +85,29 @@ a.link:hover{
 .dropdown-item{
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   margin: 1em;
   background-color: var(--dark-bg);
 }
+#teamDropdown, #positionDropdown, #yearDropdown{
+  border: 1px solid var(--dark-text);
+
+}
+#teamDropdown, #positionDropdown, #yearDropdown:hover{
+  cursor: pointer;
+}
+.sub-btn{
+  margin-top: 2em;
+  height: 3em;
+  width: 6em;
+  border-radius: 1em;
+}
+.sub-btn:hover{
+  cursor: pointer;
+  border: 3px solid var(--dark-primary);
+}
+
 label{
   margin-bottom: .5em;
 }
@@ -86,8 +119,10 @@ select{
 #DataTables_Table_0_wrapper{
   display: none;
 }
-.myTable{
-  zoom: 55%;
+#DataTables_Table_1_wrapper{
+/* .DataTables_Table_1_wrapper{ */
+  /* zoom: 55%; */
+  margin: 5%;
 }
 
 table,tbody,td,th,label,select,input, #DataTables_Table_1_info{
@@ -106,6 +141,8 @@ input:focus{
 }
 form{
   display: flex;
+  justify-content: center;
+  align-items: center;
 }
 #logo-link{
   all: unset;
@@ -113,6 +150,18 @@ form{
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+table{
+  display:none;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  color:var(--dark-text) !important;
+}
+.dataTables_wrapper .dataTables_paginate a.paginate_button {
+color: var(--dark-text) !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  border: 0px;
 }
 
 /* table {

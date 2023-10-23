@@ -20,7 +20,7 @@ teams = [
     "NYJ", "PHI", "PIT", "SFO", "SEA", "TAM", "TEN", "WAS"
 ]
 positions=["RB","QB","WR","TE","K"]
-years = [2022,2021,2020,2019,2018]
+years = [2023,2022,2021,2020,2019,2018]
 
 curr_week = 7
 
@@ -39,30 +39,29 @@ player_names = player_df[('Unnamed: 1_level_0', 'Player')].tolist()
 @app.route('/tables')
 @app.route('/tables', methods=['GET', 'POST'])
 def render_tables():
-    return render_template('tables.html', years=years,teams=teams,positions=positions)
-    # years = [2022,2021,2020,2019,2018]
-    # if request.method == 'POST':
-    #     team = request.form.get('selected_team')
-    #     position = request.form.get('selected_positon')
-    #     year = request.form.get('selected_year')
-    #     print(team,position,year)
-    #     session['selected_year'] = year
-    #     df = load_dataframe(year)
-    #     return render_template('tables.html',  tables=[df.to_html(classes='data myTable')], titles=df.columns.values, years=years,teams=teams,positions=positions)
-    # return render_template('tables.html',years=years,teams=teams,positions=positions)
-    # df_2021 = pd.read_csv('2021_fantasy.csv', index_col=None)
-    # if year is None:
-    #     year = session.get('selected_year', 2022)  # Get the selected year from the session or default to 2022
-    # else:
-    #     session['selected_year'] = year 
-    # df = load_dataframe(year)
-    # years = [2022,2021,2020,2019,2018]
-    # return render_template('tables.html',  tables=[df.to_html(classes='data myTable')], titles=df.columns.values, years=years,teams=teams,positions=positions)
+    team = request.form.get('selected_team')
+    position = request.form.get('selected_positon')
+    year = request.form.get('selected_year')
+    if year is None:
+        year = session.get('selected_year', 2023)  # Get the selected year from the session or default to 2022
+    else:
+        session['selected_year'] = year 
+    df = load_dataframe(year)
+    df = clean_df(df)
+    if team:
+        df = df[df['Tm'] == team]
+        print(df)
+    if position:
+        df = df[df['FantPos'] == position]
+    print(team,position,year)
+    return render_template('tables.html', tables=[df.to_html(classes='data myTable')], titles=df.columns.values,years=years,teams=teams,positions=positions)
 
 @app.route('/')
 @app.route('/home', methods=['GET', 'POST'])
 def render_home():
     if request.method == 'POST':
+        # text = request.form.get('text')
+        # print(text)
         # text = request.form.get('text')
         # return render_template('search.html', text=text)
         # print("TEXT IS" + text)
@@ -128,8 +127,10 @@ def render_search():
     players_info = get_top_10()
     error =False
     bye = False
+    loading = False
     # print(players_info)
     if request.method == 'POST':
+        loading = True
         # Retrieve the text from the textarea
         text = request.form.get('text')
         # If the text is blank just re render the home page fixes error.
@@ -140,7 +141,6 @@ def render_search():
         name = get_player(text)[1]
         status = getPlayerStatus(name)
         print(status)
-        loading = True
         results = prediction(name)
         # If the player wasnt found, an empty table is created, display player not found message.
         if table.empty:
@@ -172,7 +172,7 @@ def render_search():
                 return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading,status=status,color=color)
     else:
         search=False
-        return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names)
+        return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names,loading=loading)
 
 def get_top_10():
     url = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
@@ -284,36 +284,38 @@ def prediction(name):
         lasso_pred_rounded = np.around(lasso_pred, decimals=2)
         elastic_net_pred = lm_en.predict(pred_data)[0]
         elastic_net_pred_rounded = np.around(elastic_net_pred, decimals=2)
-        ridge_str = 'Ridge model: ' + str(ridge_pred_rounded)
-        lasso_str = 'Lasso model: ' + str(lasso_pred_rounded)
-        elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred_rounded)
+        ridge_str = 'Ridge model: ' + str(ridge_pred_rounded) + " Points"
+        lasso_str = 'Lasso model: ' + str(lasso_pred_rounded) + " Points"
+        elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred_rounded) + " Points"
         results_str = '\n'.join([ridge_str, lasso_str, elastic_net_str])
         return results_str
         #return (ridge_pred, lasso_pred, elastic_net_pred)
 
 
-@app.route('/tables')
-@app.route('/tables', methods=['GET', 'POST'])
-def filter_data():
-    print("Entered")
-    team = request.form.get('selected_team')
-    position = request.form.get('selected_positon')
-    year = request.form.get('selected_year')
-    # print(team,position,year)
-    # filtered_data = data
-    if year is None:
-        year = session.get('selected_year', 2022)  # Get the selected year from the session or default to 2022
-    else:
-        session['selected_year'] = year 
-    df = load_dataframe(year)
+# @app.route('/tables')
+# @app.route('/tables', methods=['GET', 'POST'])
+# def filter_data():
+#     print("Entered")
+#     team = request.form.get('selected_team')
+#     position = request.form.get('selected_positon')
+#     year = request.form.get('selected_year')
+#     # print(team,position,year)
+#     # filtered_data = data
+#     if year is None:
+#         year = session.get('selected_year', 2022)  # Get the selected year from the session or default to 2022
+#     else:
+#         session['selected_year'] = year 
+#     df = load_dataframe(year)
 
-    if team:
-        df = df[df['Tm'] == team]
+#     if team:
+#         df = df[df['Tm'] == team]
 
-    if position:
-        df = df[df['FantPos'] == position]
+#     if position:
+#         df = df[df['FantPos'] == position]
+#     print(team,position,year)
 
-    return render_template('tables.html', filtered_data=df.to_html())
+#     # return render_template('tables.html', filtered_data=df.to_html())
+#     return render_template('tables.html', tables=[df.to_html(classes='data myTable')], titles=df.columns.values)
 
 # Gets Injured Player list and drops columns column
 def getInjuredPlayers():
@@ -336,6 +338,23 @@ def getPlayerStatus(name):
     else:
         return "Healthy"
 
+def clean_df(df):
+    df.drop(['Rk', '2PM', '2PP', 'DKPt', 'FDPt', 'VBD', 'PosRank', 'OvRank', 'PPR', 'Fmb', 'GS', 'PlayerID'], axis=1, inplace=True)
+    df.fillna(0, inplace=True)
+    df['Player'] = df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
+    df.rename({
+    'TD': 'PassingTD',
+    'TD.1': 'RushingTD',
+    'TD.2': 'ReceivingTD',
+    'TD.3': 'TotalTD',
+    'Yds': 'PassingYDs',
+    'Yds.1': 'RushingYDs',
+    'Yds.2': 'ReceivingYDs',
+    'Att': 'PassingAtt',
+    'Att.1': 'RushingAtt',
+    'FantPt': 'FantasyPts'
+    }, axis=1, inplace=True)
+    return df
 # def getPlayerURL(url):
 #     player_url_list = []
 #     response = requests.get(url)

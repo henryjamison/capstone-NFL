@@ -1,6 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Roboto:ital,wght@0,300;0,500;1,500&display=swap');
-
-
 :root{
     --dark-bg: #020C22;
     --dark-primary: #1954D1;
@@ -8,6 +6,36 @@
     --dark-acc: #FF0000;
     --dark-text: #F0F5FE;
     font-family: Roboto;
+}
+
+@media screen and (max-width:1030px){
+    .player-info{
+        margin-left: 1em !important;
+    }
+}
+
+@media screen and (max-width:620px){
+    .status-text-title{
+        display: none;
+    }
+}
+
+@media screen and (max-width:700px){
+    body{
+        min-width: 700px;
+    }
+    .links{
+        gap: 15px !important;
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    .bottom-feature{
+        grid-template-columns: repeat(1, 1fr) !important;
+        width: 100% !important;
+    }
+    .player-info{
+        margin-left: 1em !important;
+    }
 }
 #logo{
     padding: 1em;
@@ -148,15 +176,15 @@ a.link:hover{
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 125px;
-    width: 125px;
+    height: 125px !important;
+    width: 125px !important;
     border-radius: 50%;
     background-color: var(--dark-text); 
 }
 
 .img-background h1{
     color:var(--dark-acc);
-    font-size:3em;
+    font-size:3.5em;
 }
 
 form{
@@ -195,6 +223,15 @@ table,tbody,td,th,label, #DataTables_Table_1_info{
     overflow-x: hidden;
     padding-right: 20px;
 } 
+.status-text{
+    font-size: 1.5em;
+    margin-left: .5em;
+}
+.status-res{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 /* .ui-menu-item-wrapper:hover{
     color: var(--dark-primary);
 } */

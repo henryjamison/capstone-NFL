@@ -1,42 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+    <title>Fantasy Foresight - Home</title>
+    <link rel="icon" href="../static/fantasy-logo.png" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="../static/home.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-    <!-- <script text="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script> -->
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>    
-    <script>
-        $(document).ready(function() {
-            $('.playerTable').DataTable({
-                select: true,
-                scrollX:true,
-                scrollY:true,
-                responsive:true,
-                initComplete: function () {
-                    // Show the table once DataTables is ready
-                    $('.playerTable').css('display', 'table');
-                },
-        });
-        $(document).ready(function() {
-        $('#textarea').on('keydown', function(event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault(); // Prevent newline in textarea
-                $('form').submit(); // Submit the form
-            }
-        });
-    });
-        });
-    </script>
 </head>
-
 <body>
-
     <div class="container">
         <div id="header">
             <div class="left-header">
@@ -89,20 +60,22 @@
             <div class="why-us-right">
                 <div class="top">
                     <div class="img-background why">
-
                     </div>
-                    <div class="why-us-text">
-                        <h1>Accurate Predictions</h1>
-                        <p>Blah blah blah</p>
+                    <div class="why-us-section">
+                        <h1 class="why-us-text">Accurate Predictions</h1>
+                        <p class="why-us-text">Use our model to get accurate predictions for a player in the current NFL week.
+                            Get an accurate update on a players injury status.
+                        </p>
                     </div>
                 </div>
                 <div class="bottom">
                     <div class="img-background why">
-
                     </div>
-                    <div class="why-us-text">
-                        <h1>User Friendly Interface</h1>
-                        <p>Blah blah blah</p>
+                    <div class="why-us-section">
+                        <h1 class="why-us-text">User Friendly Interface</h1>
+                        <p class="why-us-text">Easy to use interface.
+                            Filter fantasy data based on team, position, and year.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -113,7 +86,7 @@
                 <h1>Find Your Next Star</h1>
             </div>
             <div class="search-bar">
-                <form method="POST" onsubmit="{{url_for('render_home')}}">
+                <form method="POST" onsubmit="{{url_for('render_search')}}">
                 <input id="text" name="text" type="text" class="search-term" placeholder="Search for a player">
                 <button type="submit" class="search-btn">
                     <iconify-icon icon="maki:arrow"></iconify-icon>
