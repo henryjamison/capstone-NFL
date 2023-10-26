@@ -70,9 +70,9 @@
             </div>
         </div>
         <!-- <div id="loading" class="loading-spinner"></div> -->
-        <div id="loading" class="loading-spinner"
+        <!-- <div id="loading" class="loading-spinner"
             style="{% if loading %} display: block {% else %} display: none {% endif %};">
-        </div>
+        </div> -->
         {% if search %}
         <div class="features">
             {% if error %}
@@ -86,7 +86,7 @@
             {% else %}
             <h2>Results for {{ name }}</h2>
             <div class="status">
-                <h2 class="status-text-title">Game status for {{name}}:</h2>
+                <h2 class="status-text">Game status for {{name}}:</h2>
                 <div class="status-res">
                     <p class="status-text"> {{ status }}</p>
                     <span class="status-circle" style="background-color: {{ color }};"></span>
@@ -100,7 +100,7 @@
             {% endif %}
         </div>
         {% endif %}
-        
+
         {% if not search and not error%}
         <div class="features">
             <div class="top-feature">

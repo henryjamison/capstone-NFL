@@ -23,9 +23,8 @@
             </div>
         </div>
         <div class="first-box">
-            <!-- <img class="football-animation" src="../static/football.png" alt="Bouncing Football"> -->
             <h1 id="welcome">Welcome To Fantasy Foresight</h1>
-            <p id="welcome-p">Take your fantasy football team to the next level with accurate point predictions.</p>
+            <h3 id="welcome-p">Take your fantasy football team to the next level with accurate point predictions.</h3>
         </div>
         <div class="features">
             <div class="left-feature">
@@ -37,7 +36,7 @@
                     <div class="img-background">
                         <iconify-icon icon="game-icons:american-football-player" width="100" height="100"></iconify-icon>
                     </div>
-                    <p>Player Predictions</p>
+                    <p class="feature-text">Player Predictions</p>
                     <p>Search for any NFL player and get accurate point predictions for your upcoming fantasy football matches.</p>
 
                 </div>
@@ -46,7 +45,7 @@
                         <!-- <iconify-icon icon="icomoon-free:stats-dots" width="100" height="100"></iconify-icon> -->
                         <p id="graph">📊</p>
                     </div>
-                    <p>Comprehensive Stats</p>
+                    <p class="feature-text" style="margin-bottom: 0px;">Comprehensive Stats</p>
                     <p>View comprehensive stats of all NFL players in an easy-to-read table format.</p>
                 </div>
             </div>
@@ -60,6 +59,7 @@
             <div class="why-us-right">
                 <div class="top">
                     <div class="img-background why">
+                        <iconify-icon icon="majesticons:lightbulb-shine-line" width="100" height="100"></iconify-icon>
                     </div>
                     <div class="why-us-section">
                         <h1 class="why-us-text">Accurate Predictions</h1>
@@ -70,6 +70,7 @@
                 </div>
                 <div class="bottom">
                     <div class="img-background why">
+                        <iconify-icon icon="icon-park-twotone:web-page" style="color: white;" width="100" height="100"></iconify-icon>
                     </div>
                     <div class="why-us-section">
                         <h1 class="why-us-text">User Friendly Interface</h1>
@@ -80,7 +81,6 @@
                 </div>
             </div>
         </div>
-
         <div class="search">
             <div class="search-text">
                 <h1>Find Your Next Star</h1>
@@ -93,60 +93,8 @@
                </button>
                 </form>
              </div>
-            <!-- <div class="search-bar">
-                <input type="text" class="search-term" placeholder="Search for a player">
-                <button type="submit" class="search-btn">
-                    <iconify-icon icon="maki:arrow"></iconify-icon>
-               </button>
-             </div> -->
         </div>
     </div>
     
 </body>
 </html>
-        <!-- <div class="container">
-            <div class="links">
-                <a class="links" href="{{ url_for('render_home')}}">Home</a>
-                <a class="links" href="{{ url_for('render_tables')}}">Tables</a>
-            </div>
-            <div class="form">
-                <form method="POST" onsubmit="{{url_for('render_home')}}">
-                    <h3>Enter A Player</h3>
-                    <textarea id="textarea" name="textarea" rows="1" cols="20"></textarea>
-                    <br>
-                    <input class="hvr-glow" type="submit" value="Search">
-                    <label for="team">Select NFL team:</label>
-                    <select id="team" name="selected_team">
-                        <option value="">-- Select Team --</option>
-                        {% for team in teams %}
-                            <option value="{{ team }}">{{ team }}</option>
-                        {% endfor %}
-                    </select>
-                </form>
-            </div>
-            {% if error %}
-            <div class="message">
-                <p>{{ err_message }}</p>
-            </div>
-            {% else %}
-                <h2>{{ name }}</h2>
-            {% endif %}
-        <div class="resTable">
-            {% for table in tables %}
-            <table class="playerTable">
-                <thead>
-                    <tr>
-                        {% for title in titles %}
-                            <th>{{ title }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {{table | safe}}
-                </tbody>
-            </table>
-        {% endfor %}
-        </div>
-    </div> -->
-<!-- </body>
-</html> -->

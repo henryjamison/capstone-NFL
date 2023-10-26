@@ -22,13 +22,12 @@ teams = [
 positions=["RB","QB","WR","TE","K"]
 years = [2023,2022,2021,2020,2019,2018]
 
-curr_week = 7
+curr_week = 8
 
 def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
     return pd.read_csv(csv_file, index_col=None)
 
-# player_df = load_dataframe(2022)
 updated_fantasy_url_2023 = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
 player_df = pd.read_html(updated_fantasy_url_2023)[0]
 player_df[('Unnamed: 1_level_0', 'Player')] = player_df[('Unnamed: 1_level_0', 'Player')].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
@@ -46,14 +45,20 @@ def render_tables():
         year = session.get('selected_year', 2023)  # Get the selected year from the session or default to 2022
     else:
         session['selected_year'] = year 
+    # if year == "2023":
+    #     print("is 2023")
+    #     url_2023 = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
+    #     df = pd.read_html(url_2023)[0]
+    #     print(df)
+    # else:
     df = load_dataframe(year)
     df = clean_df(df)
     if team:
         df = df[df['Tm'] == team]
-        print(df)
     if position:
         df = df[df['FantPos'] == position]
-    print(team,position,year)
+    df = df.reset_index(drop=True)
+    # print(team,position,year)
     return render_template('tables.html', tables=[df.to_html(classes='data myTable')], titles=df.columns.values,years=years,teams=teams,positions=positions)
 
 @app.route('/')
@@ -124,6 +129,7 @@ def get_fant_table(player_id):
 @app.route('/search')
 @app.route('/search', methods=['GET', 'POST'])
 def render_search():
+    # Have to fix this eventually, because its the reason searching was slow. Using local data for now, instead of fetching data each time. Maybe set up a script to update local data once a week with new fantasy data and remove the old csv.
     players_info = get_top_10()
     error =False
     bye = False
@@ -140,7 +146,7 @@ def render_search():
         table = get_player(text)[0]
         name = get_player(text)[1]
         status = getPlayerStatus(name)
-        print(status)
+        # print(status)
         results = prediction(name)
         # If the player wasnt found, an empty table is created, display player not found message.
         if table.empty:
@@ -175,27 +181,38 @@ def render_search():
         return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names,loading=loading)
 
 def get_top_10():
-    url = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
-    table = pd.read_html(url)[0]
+    # Commenting a lot of this out while I figure out a better way to fetch this data.
+    # url = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
+    # table = pd.read_html(url)[0]
+    table = load_dataframe(2023)
+    table['FantPt'] = pd.to_numeric(table['FantPt'])
+    # table = table[table[('Unnamed: 1_level_0', 'Player')] != 'Player']
+    # table[('Fantasy', 'FantPt')] = pd.to_numeric(table[('Fantasy', 'FantPt')])
+    # table = table.sort_values(by=('Fantasy', 'FantPt'), ascending=False)
+    table = table.sort_values(by=('FantPt'), ascending=False)
     table = table.head(10)
-
-    new_columns = []
-    for col in table.columns:
-        new_col = []
-        for level in col:
-            if "Unnamed" in level:
-                new_col.append('')
-            else:
-                new_col.append(level)
-        new_columns.append(tuple(new_col))
-    table.columns = pd.MultiIndex.from_tuples(new_columns)
-    table = table.drop(columns=('Rk'), level=-1)
+    table = table.reset_index(drop=True)
+    # new_columns = []
+    # for col in table.columns:
+    #     new_col = []
+    #     for level in col:
+    #         if "Unnamed" in level:
+    #             new_col.append('')
+    #         else:
+    #             new_col.append(level)
+    #     new_columns.append(tuple(new_col))
+    # table.columns = pd.MultiIndex.from_tuples(new_columns)
+    # table = table.drop(columns=('Rk'), level=-1)
     table.fillna(0,inplace=True)
 
-    players_list = table[('', 'Player')].tolist()
-    positions_list = table[('', 'FantPos')].tolist()
-    teams_list = table[('', 'Tm')].tolist()
-    points_list = table[('Fantasy', 'FantPt')].tolist()
+    # players_list = table[('', 'Player')].tolist()
+    # positions_list = table[('', 'FantPos')].tolist()
+    # teams_list = table[('', 'Tm')].tolist()
+    # points_list = table[('Fantasy', 'FantPt')].tolist()
+    players_list = table['Player'].tolist()
+    positions_list = table['FantPos'].tolist()
+    teams_list = table['Tm'].tolist()
+    points_list = table['FantPt'].tolist()
     rank_list = list(map(lambda i : i + 1, table.index.tolist()))
 
     players_info = [{'Name': player, 'Position': position, 'Team': team, 'Points':points, 'Rank':rank} for player, position, team, points, rank in zip(players_list, positions_list, teams_list,points_list, rank_list)]
@@ -210,7 +227,7 @@ def get_opp(team):
     schedule = pd.read_csv('./data/Schedule.csv')
     game = schedule.query('Week == (@curr_week) and (Home == @team or Away == @team)')
     # opp = 'Bye Week'
-    print(game)
+    # print(game)
     if game.query('Home == @team').empty and game.query('Away == @team').empty:
         opp = 'Bye Week'
     elif game.query('Home == @team').empty:
@@ -240,7 +257,7 @@ def preprocessing(player_table):
     #get the table
     df = player_table
     if df.empty:
-        return pd.DataFrame()
+        return pd.DataFrame()   
     #remove unneeded columns from a higher level
     table = df.drop(['Inside 20', 'Inside 10', 'Snap Counts'], axis=1, errors='ignore')
     #make only one level of column names
@@ -339,9 +356,24 @@ def getPlayerStatus(name):
         return "Healthy"
 
 def clean_df(df):
-    df.drop(['Rk', '2PM', '2PP', 'DKPt', 'FDPt', 'VBD', 'PosRank', 'OvRank', 'PPR', 'Fmb', 'GS', 'PlayerID'], axis=1, inplace=True)
+    df.drop(['Rk', '2PM', '2PP', 'DKPt', 'FDPt', 'VBD', 'PosRank', 'OvRank', 'PPR', 'Fmb', 'GS', 'PlayerID'], axis=1, inplace=True, errors='ignore')
     df.fillna(0, inplace=True)
+    # if 'Player' in df.columns:
     df['Player'] = df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
+    # else:
+    #     new_columns = []
+    #     for col in df.columns:
+    #         new_col = []
+    #         for level in col:
+    #             # print (level)
+    #             if "Unnamed" in level:
+    #                 new_col.append('')
+    #             else:
+    #                 new_col.append(level)
+    #     new_columns.append(tuple(new_col))
+    #     df.columns = pd.MultiIndex.from_tuples(new_columns)
+    #     df = df.drop(columns=('Rk'), level=-1)
+    
     df.rename({
     'TD': 'PassingTD',
     'TD.1': 'RushingTD',
