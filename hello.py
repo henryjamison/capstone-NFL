@@ -22,7 +22,7 @@ teams = [
 positions=["RB","QB","WR","TE","K"]
 years = [2023,2022,2021,2020,2019,2018]
 
-curr_week = 8
+curr_week = 11
 
 def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
@@ -32,7 +32,10 @@ updated_fantasy_url_2023 = 'https://www.pro-football-reference.com/years/2023/fa
 player_df = pd.read_html(updated_fantasy_url_2023)[0]
 player_df[('Unnamed: 1_level_0', 'Player')] = player_df[('Unnamed: 1_level_0', 'Player')].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
 player_df = player_df[player_df[('Unnamed: 1_level_0', 'Player')] != 'Player']
-player_names = player_df[('Unnamed: 1_level_0', 'Player')].tolist()
+list_of_names = player_df[('Unnamed: 1_level_0', 'Player')].tolist()
+kicker_df = pd.read_csv('./data/2023_NFL_kickers.csv')
+kicker_names = kicker_df['Player'].tolist()
+player_names = list_of_names + kicker_names
 
 
 @app.route('/tables')
@@ -76,7 +79,9 @@ def render_home():
 
 # @app.route('/home')
 def get_player(name):
-    df = pd.read_csv('./data/2023_fantasy.csv')
+    ######## Old csv file
+    # df = pd.read_csv('./data/2023_fantasy.csv')
+    df = pd.read_csv('./data/2023_fantasy_with_kickers.csv')
     df['Player'] = df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
     # print("PLAYER NAME: " + name)
     name_lower = name.lower()
@@ -98,11 +103,11 @@ def get_fant_table(player_id):
     print(url)
     table = pd.read_html(url)[0]
     # print(table.to_html())
-    columns_to_drop = ['Unnamed: 7_level_0', 'Unnamed: 6_level_0', 'Unnamed: 1_level_0',
-                       'Unnamed: 2_level_0', 'Unnamed: 3_level_0', 'Unnamed: 4_level_0', 'Unnamed: 3_level_0',
-                       'Unnamed: 4_level_0', 'Unnamed: 5_level_0', 'Unnamed: 28_level_0', 'Unnamed: 29_level_0',
-                       'Unnamed: 30_level_0','Unnamed: 36_level_0',	'Unnamed: 37_level_0',	'Unnamed: 38_level_0',
-                       'Unnamed: 22_level_0','Unnamed: 23_level_0','Unnamed: 24_level_0']
+    # columns_to_drop = ['Unnamed: 7_level_0', 'Unnamed: 6_level_0', 'Unnamed: 1_level_0',
+    #                    'Unnamed: 2_level_0', 'Unnamed: 3_level_0', 'Unnamed: 4_level_0', 'Unnamed: 3_level_0',
+    #                    'Unnamed: 4_level_0', 'Unnamed: 5_level_0', 'Unnamed: 28_level_0', 'Unnamed: 29_level_0',
+    #                    'Unnamed: 30_level_0','Unnamed: 36_level_0',	'Unnamed: 37_level_0',	'Unnamed: 38_level_0',
+    #                    'Unnamed: 22_level_0','Unnamed: 23_level_0','Unnamed: 24_level_0']
     
     # This goes through column value levels and if the column starts with Unnamed,
     # The value is replaced with "", we cant drop the column outright so we must
@@ -160,13 +165,13 @@ def render_search():
             bye = True
             bye_message = f'{name} is on a Bye Week'
             search = True
-            return render_template('search.html',players=players_info,search=search,error=error, player_names=player_names, bye=bye, bye_message=bye_message, results=results)
+            return render_template('search.html',players=players_info,search=search,error=error, player_names=player_names, bye=bye, bye_message=bye_message, results=results, week=curr_week)
         #Player is found enter loop
         else:
             # If the player is out, dont print any predictions just display status.
             if status == "Out" or status == "Injured Reserve":
                 color = "Red"
-                return render_template('search.html', error=error,players=players_info,search=True,player_names=player_names,status=status,name=name,results="",color=color)
+                return render_template('search.html', error=error,players=players_info,search=True,player_names=player_names,status=status,name=name,results="",color=color, week=curr_week)
             # Player is healthy and prediction is found, display as usual.
             else:
                 if status == "Questionable":
@@ -175,7 +180,7 @@ def render_search():
                     color = "Green"
                 search = True
                 loading = False
-                return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading,status=status,color=color)
+                return render_template('search.html', tables=[table.to_html(classes='data playerTable')], titles=table.columns.values, name=name, players=players_info, search=search,error=error,player_names=player_names, results=results,loading=loading,status=status,color=color, week=curr_week)
     else:
         search=False
         return render_template('search.html',players=players_info,search=False,error=error, player_names=player_names,loading=loading)

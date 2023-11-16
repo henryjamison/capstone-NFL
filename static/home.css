@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Roboto:ital,wght@0,300;0,500;1,500&display=swap');
 :root{
     --dark-bg: #020C22;
+    /* --dark-bg:#013369; NFL Hex code */
     --dark-primary: #1954D1;
     --dark-secondary: #020F2C;
     --dark-acc: #FF0000;
