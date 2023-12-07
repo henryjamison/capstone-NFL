@@ -19,10 +19,10 @@ teams = [
     "LVR", "LAC", "LAR", "MIA", "MIN", "NWE", "NOR", "NYG",
     "NYJ", "PHI", "PIT", "SFO", "SEA", "TAM", "TEN", "WAS"
 ]
-positions=["RB","QB","WR","TE","K"]
+positions=["RB","QB","WR","TE"]
 years = [2023,2022,2021,2020,2019,2018]
 
-curr_week = 11
+curr_week = 13
 
 def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
@@ -168,10 +168,10 @@ def render_search():
             return render_template('search.html',players=players_info,search=search,error=error, player_names=player_names, bye=bye, bye_message=bye_message, results=results, week=curr_week)
         #Player is found enter loop
         else:
-            # If the player is out, dont print any predictions just display status.
-            if status == "Out" or status == "Injured Reserve":
+            # If the player is out, print a predicition of 0.0 and display their status
+            if status == "Out" or status == "Injured Reserve" or status == "Doubtful":
                 color = "Red"
-                return render_template('search.html', error=error,players=players_info,search=True,player_names=player_names,status=status,name=name,results="",color=color, week=curr_week)
+                return render_template('search.html', error=error,players=players_info,search=True,player_names=player_names,status=status,name=name,results=0.0,color=color, week=curr_week)
             # Player is healthy and prediction is found, display as usual.
             else:
                 if status == "Questionable":
@@ -301,16 +301,16 @@ def prediction(name):
         lm_l = Lasso().fit(X_train, y_train)
         lm_en = ElasticNet().fit(X_train, y_train)
         ridge_pred = lm_r.predict(pred_data)[0]
-        ridge_pred_rounded = np.around(ridge_pred, decimals=2)
         lasso_pred = lm_l.predict(pred_data)[0]
-        lasso_pred_rounded = np.around(lasso_pred, decimals=2)
         elastic_net_pred = lm_en.predict(pred_data)[0]
-        elastic_net_pred_rounded = np.around(elastic_net_pred, decimals=2)
-        ridge_str = 'Ridge model: ' + str(ridge_pred_rounded) + " Points"
-        lasso_str = 'Lasso model: ' + str(lasso_pred_rounded) + " Points"
-        elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred_rounded) + " Points"
-        results_str = '\n'.join([ridge_str, lasso_str, elastic_net_str])
-        return results_str
+        # ridge_str = 'Ridge model: ' + str(ridge_pred_rounded) + " Points"
+        # lasso_str = 'Lasso model: ' + str(lasso_pred_rounded) + " Points"
+        # elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred_rounded) + " Points"
+        # results_str = '\n'.join([ridge_str, lasso_str, elastic_net_str])
+        mean = np.mean([ridge_pred, lasso_pred, elastic_net_pred])
+        mean_rounded = np.around(mean, decimals=2)
+        return mean_rounded
+        # return results_str
         #return (ridge_pred, lasso_pred, elastic_net_pred)
 
 

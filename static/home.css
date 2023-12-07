@@ -245,30 +245,18 @@ a.link:hover{
     flex-direction: column;
     margin-bottom: 5%;
 }
-.search-text h1{
-    font-style: normal;
-    font-weight: 700;
-}
-.search-bar{
-    display: flex;
-}
-.search-term{
-    padding: .6em;
-    width:235px;   
-    border: none; 
-}
-.search-term:focus{
-    outline: none;
-}
-.search-btn{
-    display: flex;
-    align-items: center;
-    border:none;
+
+.search-bar a{
+    all: unset;
+    font-size: 30px;
     cursor: pointer;
-    background-color: white;
-}
-form{
+    color: var(--dark-bg);
     display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--dark-text);
+    padding: .4em;
+    border-radius: 10px;
 }
 
 #logo-link{

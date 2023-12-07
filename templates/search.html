@@ -11,7 +11,7 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script>
         $(document).ready(function () {
-        var availableTags = {{ player_names | tojson | safe }};
+            var availableTags = {{ player_names | tojson | safe }};
         // showLoadingAnimation();
         $("#text").autocomplete({
             source: availableTags
@@ -40,13 +40,14 @@
         // };
     </script>
 </head>
+
 <body>
     <div class="container">
         <div id="header">
             <div class="left-header">
                 <a id="logo-link" href="{{url_for('render_home')}}">
-                <img id="logo" src="../static/fantasy-logo.png" alt="">
-                <h1 id="logo-text">Fantasy Foresight</h1>
+                    <img id="logo" src="../static/fantasy-logo.png" alt="">
+                    <h1 id="logo-text">Fantasy Foresight</h1>
                 </a>
             </div>
             <div class="links">
@@ -84,7 +85,8 @@
                 <h2>{{ bye_message }}</h2>
             </div>
             {% else %}
-            <h2>Results for {{ name }} in week {{week}}</h2>
+            <!-- <h2>Results for {{ name }} in week {{week}}</h2> -->
+            <!-- <h2>Week {{week}} Projection</h2> -->
             <div class="status">
                 <h2 class="status-text">Game status for {{name}}:</h2>
                 <div class="status-res">
@@ -92,11 +94,26 @@
                     <span class="status-circle" style="background-color: {{ color }};"></span>
                 </div>
             </div>
+            <h2>Week {{week}} Projection</h2>
             <div class="resTable">
-                {% for res in results.splitlines() %}
-                <h1>{{res}}</h1>
-                {% endfor %}
+                <h1 class="res-pts">{{results}}</h1>
+                <p class="res-text"> points</p>
             </div>
+
+            <!-- {% for table in tables %}
+            <table class="myTable">
+                <thead>
+                    <tr>
+                        {% for title in titles %}
+                        <th>{{ title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {{table | safe}}
+                </tbody>
+            </table>
+            {% endfor %} -->
             {% endif %}
         </div>
         {% endif %}

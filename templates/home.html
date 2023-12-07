@@ -82,17 +82,12 @@
             </div>
         </div>
         <div class="search">
-            <div class="search-text">
-                <h1>Find Your Next Star</h1>
-            </div>
             <div class="search-bar">
-                <form method="POST" onsubmit="{{url_for('render_search')}}">
-                <input id="text" name="text" type="text" class="search-term" placeholder="Search for a player">
-                <button type="submit" class="search-btn">
+                <a href="{{url_for('render_search')}}">
+                    Search for a player
                     <iconify-icon icon="maki:arrow"></iconify-icon>
-               </button>
-                </form>
-             </div>
+                </a>
+            </div>
         </div>
     </div>
     
