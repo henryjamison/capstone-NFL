@@ -22,12 +22,14 @@ teams = [
 positions=["RB","QB","WR","TE"]
 years = [2023,2022,2021,2020,2019,2018]
 
-curr_week = 13
+# Current Week number
+curr_week = 14
 
 def load_dataframe(year):
     csv_file = f"./data/{year}_fantasy.csv"
     return pd.read_csv(csv_file, index_col=None)
 
+# This code just gets the updated list of players in the current fantasy year, its used for autofill in our search bar.
 updated_fantasy_url_2023 = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
 player_df = pd.read_html(updated_fantasy_url_2023)[0]
 player_df[('Unnamed: 1_level_0', 'Player')] = player_df[('Unnamed: 1_level_0', 'Player')].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
@@ -37,7 +39,7 @@ kicker_df = pd.read_csv('./data/2023_NFL_kickers.csv')
 kicker_names = kicker_df['Player'].tolist()
 player_names = list_of_names + kicker_names
 
-
+# This renders our table page HTML.
 @app.route('/tables')
 @app.route('/tables', methods=['GET', 'POST'])
 def render_tables():
@@ -48,12 +50,6 @@ def render_tables():
         year = session.get('selected_year', 2023)  # Get the selected year from the session or default to 2022
     else:
         session['selected_year'] = year 
-    # if year == "2023":
-    #     print("is 2023")
-    #     url_2023 = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
-    #     df = pd.read_html(url_2023)[0]
-    #     print(df)
-    # else:
     df = load_dataframe(year)
     df = clean_df(df)
     if team:
@@ -64,6 +60,7 @@ def render_tables():
     # print(team,position,year)
     return render_template('tables.html', tables=[df.to_html(classes='data myTable')], titles=df.columns.values,years=years,teams=teams,positions=positions)
 
+# This renders our home page HTML.
 @app.route('/')
 @app.route('/home', methods=['GET', 'POST'])
 def render_home():
@@ -78,6 +75,7 @@ def render_home():
         return render_template('home.html')
 
 # @app.route('/home')
+# Gets player info from local dataframe, used to see if a player exists, is valid, etc...
 def get_player(name):
     ######## Old csv file
     # df = pd.read_csv('./data/2023_fantasy.csv')
@@ -98,21 +96,14 @@ def get_player(name):
         player_table = get_fant_table(id)
     return player_table, ret_name
 
+# Gets fantasy stats from ProFootballReference with a given player ID.
 def get_fant_table(player_id):
     url = 'https://www.pro-football-reference.com/players/' + player_id[0] + '/' + player_id + '/' + 'fantasy/2023/'
     print(url)
     table = pd.read_html(url)[0]
-    # print(table.to_html())
-    # columns_to_drop = ['Unnamed: 7_level_0', 'Unnamed: 6_level_0', 'Unnamed: 1_level_0',
-    #                    'Unnamed: 2_level_0', 'Unnamed: 3_level_0', 'Unnamed: 4_level_0', 'Unnamed: 3_level_0',
-    #                    'Unnamed: 4_level_0', 'Unnamed: 5_level_0', 'Unnamed: 28_level_0', 'Unnamed: 29_level_0',
-    #                    'Unnamed: 30_level_0','Unnamed: 36_level_0',	'Unnamed: 37_level_0',	'Unnamed: 38_level_0',
-    #                    'Unnamed: 22_level_0','Unnamed: 23_level_0','Unnamed: 24_level_0']
-    
     # This goes through column value levels and if the column starts with Unnamed,
     # The value is replaced with "", we cant drop the column outright so we must
     # replace it with a "".
-    # print(table.columns.values)
     table.rename({'Unnamed: 4_level_2':'Home/Away'}, axis=1, inplace=True)
     new_columns = []
     for col in table.columns:
@@ -131,6 +122,7 @@ def get_fant_table(player_id):
     table.loc[table.index[:-1], ('', '', 'Home/Away')] = table.loc[table.index[:-1], ('', '', 'Home/Away')].apply(lambda x: 'Away' if x == '@' else ('Home' if x == 0 else x))
     return table
 
+# This controls all functionality for searching and displaying search HTML. 
 @app.route('/search')
 @app.route('/search', methods=['GET', 'POST'])
 def render_search():
@@ -228,6 +220,7 @@ def get_team(name):
     data = preprocessing(table)
     return data['Tm'][0]
 
+# Gets the  for a given team from schedule.csv
 def get_opp(team):
     schedule = pd.read_csv('./data/Schedule.csv')
     game = schedule.query('Week == (@curr_week) and (Home == @team or Away == @team)')
@@ -241,6 +234,7 @@ def get_opp(team):
         opp = game['Away'].item()
     return opp
 
+# Creates prediction table for prediction() function
 def create_pred_table(name):
     sched = pd.read_csv('./data/2023_schedule.csv')
     team = get_team(name)
@@ -258,6 +252,7 @@ def create_pred_table(name):
                 pred_table['Opp_' + i] = not_playing
         return pred_table
 
+# This preprocesses our data, gets called in prediction() function
 def preprocessing(player_table):
     #get the table
     df = player_table
@@ -285,6 +280,7 @@ def preprocessing(player_table):
             data['Opp_' + i] = teams_unplayed
     return data
 
+# This does the prediction for the player, calls preprocessing and returns mean value
 def prediction(name):
     table, pid = get_player(name)
     train = preprocessing(table)
@@ -303,15 +299,10 @@ def prediction(name):
         ridge_pred = lm_r.predict(pred_data)[0]
         lasso_pred = lm_l.predict(pred_data)[0]
         elastic_net_pred = lm_en.predict(pred_data)[0]
-        # ridge_str = 'Ridge model: ' + str(ridge_pred_rounded) + " Points"
-        # lasso_str = 'Lasso model: ' + str(lasso_pred_rounded) + " Points"
-        # elastic_net_str = 'Elastic Net Model: ' + str(elastic_net_pred_rounded) + " Points"
-        # results_str = '\n'.join([ridge_str, lasso_str, elastic_net_str])
+        # Average the 3 scores and display that. Gets us the best results overall.
         mean = np.mean([ridge_pred, lasso_pred, elastic_net_pred])
         mean_rounded = np.around(mean, decimals=2)
         return mean_rounded
-        # return results_str
-        #return (ridge_pred, lasso_pred, elastic_net_pred)
 
 
 # @app.route('/tables')
@@ -339,13 +330,15 @@ def prediction(name):
 #     # return render_template('tables.html', filtered_data=df.to_html())
 #     return render_template('tables.html', tables=[df.to_html(classes='data myTable')], titles=df.columns.values)
 
-# Gets Injured Player list and drops columns column
+# Gets Injured Player list and drops comments column
 def getInjuredPlayers():
     espn_url = 'https://www.espn.com/nfl/injuries'
     espn_df = pd.read_html(espn_url)
+    # Concat all team dfs into one and drop unneeded columns
     merged_df = pd.concat(espn_df)
     merged_df = merged_df.drop('COMMENT', axis=1)
     merged_df = merged_df.reset_index(drop=True)
+    # We only care about offensive positions so filter out others.
     merged_df = merged_df[merged_df['POS'].isin(positions)]
     merged_df = merged_df.reset_index(drop=True)
     return merged_df
@@ -360,25 +353,11 @@ def getPlayerStatus(name):
     else:
         return "Healthy"
 
+# Gets rid of unneeded columns from out dataframe.
 def clean_df(df):
     df.drop(['Rk', '2PM', '2PP', 'DKPt', 'FDPt', 'VBD', 'PosRank', 'OvRank', 'PPR', 'Fmb', 'GS', 'PlayerID'], axis=1, inplace=True, errors='ignore')
     df.fillna(0, inplace=True)
-    # if 'Player' in df.columns:
     df['Player'] = df['Player'].apply(lambda x: x.split('*')[0]).apply(lambda x: x.split('\\')[0])
-    # else:
-    #     new_columns = []
-    #     for col in df.columns:
-    #         new_col = []
-    #         for level in col:
-    #             # print (level)
-    #             if "Unnamed" in level:
-    #                 new_col.append('')
-    #             else:
-    #                 new_col.append(level)
-    #     new_columns.append(tuple(new_col))
-    #     df.columns = pd.MultiIndex.from_tuples(new_columns)
-    #     df = df.drop(columns=('Rk'), level=-1)
-    
     df.rename({
     'TD': 'PassingTD',
     'TD.1': 'RushingTD',
@@ -392,38 +371,3 @@ def clean_df(df):
     'FantPt': 'FantasyPts'
     }, axis=1, inplace=True)
     return df
-# def getPlayerURL(url):
-#     player_url_list = []
-#     response = requests.get(url)
-#     if response.status_code == 200:
-#         soup = BeautifulSoup(response.text, 'html.parser')
-#         url = 'https://www.pro-football-reference.com/years/2023/fantasy.htm'
-#         player_ids = []
-#         player_td_elements = soup.find_all('td', {'data-stat': 'player'})
-
-#         for td_element in player_td_elements:
-#         # Do something with the td_element
-#             href = td_element.find('a')['href']
-#             player_id = href.split('/players/')[1].split('.htm')[0]
-#             player_url = f"https://www.pro-football-reference.com/players/{player_id}.htm"
-#             player_url_list.append(player_url)
-
-#     else:
-#         print("Failed to fetch the webpage.")
-#     return player_url_list[:10]
-
-# def get_images(url_list):
-#     img_list = []
-#     src_list = [] 
-#     for u in url_list:
-#         req = requests.get(u)
-#         soup = BeautifulSoup(req.text, 'html.parser')
-#         images = soup.find_all('img', {"itemscope" : "image"})
-#         img_list.append(images)
-
-#     for img in img_list:
-#         src = img[0]['src']
-#         src_list.append(src)
-#     return(src_list)
-
-# def get_suggested_players():
