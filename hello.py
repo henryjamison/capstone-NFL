@@ -62,16 +62,7 @@ def render_tables():
 
 # This renders our home page HTML.
 @app.route('/')
-@app.route('/home', methods=['GET', 'POST'])
 def render_home():
-    if request.method == 'POST':
-        # text = request.form.get('text')
-        # print(text)
-        # text = request.form.get('text')
-        # return render_template('search.html', text=text)
-        # print("TEXT IS" + text)
-        return redirect(url_for('render_search'))
-    else:
         return render_template('home.html')
 
 # @app.route('/home')

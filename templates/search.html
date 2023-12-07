@@ -12,7 +12,6 @@
     <script>
         $(document).ready(function () {
             var availableTags = {{ player_names | tojson | safe }};
-        // showLoadingAnimation();
         $("#text").autocomplete({
             source: availableTags
         });
@@ -25,19 +24,6 @@
             });
         });
         });
-        // function showLoadingAnimation() {
-        //     console.log("Show Called!");
-        //     document.getElementById("loading").style.display = "block";
-        // }
-
-        // function hideLoadingAnimation() {
-        //     console.log("Hide Called!");
-        //     document.getElementById("loading").style.display = "none";
-        // }
-        // window.onload = function () {
-        //     // Your code to run after the page and all assets are fully loaded
-        //     hideLoadingAnimation(); // Hide your loading animation here
-        // };
     </script>
 </head>
 
@@ -63,17 +49,12 @@
             <div class="search-bar">
                 <form method="POST" action="{{url_for('render_search')}}">
                     <input id="text" name="text" type="text" class="search-term" placeholder="Search for a player">
-                    <!-- <input id="playerNames"> -->
                     <button type="submit" class="search-btn">
                         <iconify-icon icon="maki:arrow"></iconify-icon>
                     </button>
                 </form>
             </div>
         </div>
-        <!-- <div id="loading" class="loading-spinner"></div> -->
-        <!-- <div id="loading" class="loading-spinner"
-            style="{% if loading %} display: block {% else %} display: none {% endif %};">
-        </div> -->
         {% if search %}
         <div class="features">
             {% if error %}
@@ -85,8 +66,6 @@
                 <h2>{{ bye_message }}</h2>
             </div>
             {% else %}
-            <!-- <h2>Results for {{ name }} in week {{week}}</h2> -->
-            <!-- <h2>Week {{week}} Projection</h2> -->
             <div class="status">
                 <h2 class="status-text">Game status for {{name}}:</h2>
                 <div class="status-res">
