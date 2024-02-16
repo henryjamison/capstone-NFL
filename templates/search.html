@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Fantasy Foresight - Search</title>
+    <link rel="icon" href="../static/fantasy-logo.png" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="../static/search.css">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var availableTags = {{ player_names | tojson | safe }};
+        $("#text").autocomplete({
+            source: availableTags
+        });
+        $(document).ready(function () {
+            $('#text').on('keydown', function (event) {
+                if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault(); // Prevent newline in textarea
+                    $('form').submit(); // Submit the form
+                }
+            });
+        });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div id="header">
+            <div class="left-header">
+                <a id="logo-link" href="{{url_for('render_home')}}">
+                    <img id="logo" src="../static/fantasy-logo.png" alt="">
+                    <h1 id="logo-text">Fantasy Foresight</h1>
+                </a>
+            </div>
+            <div class="links">
+                <a class="link" href="{{url_for('render_home')}}">Home</a>
+                <a class="link" href="{{url_for('render_search')}}">Search</a>
+                <a class="link" href="{{url_for('render_tables')}}">Team Stats</a>
+            </div>
+        </div>
+        <div class="search">
+            <div class="search-text">
+                <h1>Search For a Player</h1>
+            </div>
+            <div class="search-bar">
+                <form method="POST" action="{{url_for('render_search')}}">
+                    <input id="text" name="text" type="text" class="search-term" placeholder="Search for a player">
+                    <button type="submit" class="search-btn">
+                        <iconify-icon icon="maki:arrow"></iconify-icon>
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% if search %}
+        <div class="features">
+            {% if error %}
+            <div class="message">
+                <h2>{{ err_message }}</h2>
+            </div>
+            {% elif bye %}
+            <div class="message">
+                <h2>{{ bye_message }}</h2>
+            </div>
+            {% else %}
+            <div class="status">
+                <h2 class="status-text">Game status for {{name}}:</h2>
+                <div class="status-res">
+                    <p class="status-text"> {{ status }}</p>
+                    <span class="status-circle" style="background-color: {{ color }};"></span>
+                </div>
+            </div>
+            <h2>Week {{week}} Projection</h2>
+            <div class="resTable">
+                <h1 class="res-pts">{{results}}</h1>
+                <p class="res-text"> points</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if not search and not error%}
+        <div class="features">
+            <div class="top-feature">
+                <h1>Top 10 Performers this season</h1>
+            </div>
+            <div class="bottom-feature">
+                {% for player in players %}
+                <div class="inner-feature">
+                    <div class="img-background">
+                        <h1>{{player.Rank}}</h1>
+                    </div>
+                    <div class="player-info">
+                        <h3>{{ player.Name }}</h3>
+                        <p>Position: {{ player.Position }}</p>
+                        <p>Team: {{ player.Team }}</p>
+                        <p>Points: {{ player.Points }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

@@ -1,83 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+    <title>Fantasy Foresight - Home</title>
+    <link rel="icon" href="../static/fantasy-logo.png" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="../static/home.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script text="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>    
-    <script>
-        $(document).ready(function() {
-            $('.playerTable').DataTable({
-                select: true,
-                scrollX:true,
-                scrollY:true,
-                responsive:true,
-                initComplete: function () {
-                    // Show the table once DataTables is ready
-                    $('.playerTable').css('display', 'table');
-                },
-        });
-        $(document).ready(function() {
-        $('#textarea').on('keydown', function(event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault(); // Prevent newline in textarea
-                $('form').submit(); // Submit the form
-            }
-        });
-    });
-        });
-    </script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 </head>
-
 <body>
-        <div class="container">
+    <div class="container">
+        <div id="header">
+            <div class="left-header">
+                <a id="logo-link" href="{{url_for('render_home')}}">
+                <img id="logo" src="../static/fantasy-logo.png" alt="">
+                <h1 id="logo-text">Fantasy Foresight</h1>
+                </a>
+            </div>
             <div class="links">
-                <a class="links" href="{{ url_for('render_home')}}">Home</a>
-                <a class="links" href="{{ url_for('render_tables')}}">Tables</a>
+                <a class="link" href="{{url_for('render_home')}}">Home</a>
+                <a class="link" href="{{url_for('render_search')}}">Search</a>
+                <a class="link" href="{{url_for('render_tables')}}">Team Stats</a>
             </div>
-            <div class="form">
-                <form method="POST" onsubmit="{{url_for('render_home')}}">
-                    <h3>Enter A Player</h3>
-                    <textarea id="textarea" name="textarea" rows="1" cols="20"></textarea>
-                    <br>
-                    <input class="hvr-glow" type="submit" value="Search">
-                    <!-- <label for="team">Select NFL team:</label>
-                    <select id="team" name="selected_team">
-                        <option value="">-- Select Team --</option>
-                        {% for team in teams %}
-                            <option value="{{ team }}">{{ team }}</option>
-                        {% endfor %}
-                    </select> -->
-                </form>
+        </div>
+        <div class="first-box">
+            <h1 id="welcome">Welcome To Fantasy Foresight</h1>
+            <h3 id="welcome-p">Take your fantasy football team to the next level with accurate point predictions.</h3>
+        </div>
+        <div class="features">
+            <div class="left-feature">
+                <h1>Key Features</h1>
+                <p>Discover how Fantasy Foresight can enhance your fantasy football experience.</p>
             </div>
-            {% if error %}
-            <div class="message">
-                <p>{{ err_message }}</p>
+            <div class="right-feature">
+                <div class="inner-left-feature">
+                    <div class="img-background">
+                        <iconify-icon icon="game-icons:american-football-player" width="100" height="100"></iconify-icon>
+                    </div>
+                    <p class="feature-text">Player Predictions</p>
+                    <p>Search for any NFL player and get accurate point predictions for your upcoming fantasy football matches.</p>
+
+                </div>
+                <div class="inner-right-feature">
+                    <div class="img-background">
+                        <!-- <iconify-icon icon="icomoon-free:stats-dots" width="100" height="100"></iconify-icon> -->
+                        <p id="graph">📊</p>
+                    </div>
+                    <p class="feature-text" style="margin-bottom: 0px;">Comprehensive Stats</p>
+                    <p>View comprehensive stats of all NFL players in an easy-to-read table format.</p>
+                </div>
             </div>
-            {% else %}
-                <h2>{{ name }}</h2>
-            {% endif %}
-        <div class="resTable">
-            {% for table in tables %}
-            <table class="playerTable">
-                <thead>
-                    <tr>
-                        {% for title in titles %}
-                            <th>{{ title }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {{table | safe}}
-                </tbody>
-            </table>
-        {% endfor %}
+        </div>
+
+        <div class="why-us">
+            <div class="left-feature">
+                <h1>Why Fantasy Foresight?</h1>
+                <p>Discover why fantasy football team owners love using Fantasy Foresight.</p>
+            </div>
+            <div class="why-us-right">
+                <div class="top">
+                    <div class="img-background why">
+                        <iconify-icon icon="majesticons:lightbulb-shine-line" width="100" height="100"></iconify-icon>
+                    </div>
+                    <div class="why-us-section">
+                        <h1 class="why-us-text">Accurate Predictions</h1>
+                        <p class="why-us-text">Use our model to get accurate predictions for a player in the current NFL week.
+                            Get an accurate update on a players injury status.
+                        </p>
+                    </div>
+                </div>
+                <div class="bottom">
+                    <div class="img-background why">
+                        <iconify-icon icon="icon-park-twotone:web-page" style="color: white;" width="100" height="100"></iconify-icon>
+                    </div>
+                    <div class="why-us-section">
+                        <h1 class="why-us-text">User Friendly Interface</h1>
+                        <p class="why-us-text">Easy to use interface.
+                            Filter fantasy data based on team, position, and year.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="search">
+            <div class="search-bar">
+                <a href="{{url_for('render_search')}}">
+                    Search for a player
+                    <iconify-icon icon="maki:arrow"></iconify-icon>
+                </a>
+            </div>
         </div>
     </div>
+    
 </body>
 </html>

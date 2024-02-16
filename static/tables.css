@@ -1,56 +1,165 @@
-table {
-    border-collapse: collapse;
-    /* display: flex; */
-    
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&family=Roboto:ital,wght@0,300;0,500;1,500&display=swap');
+
+:root{
+  --dark-bg: #020C22;
+  --dark-primary: #1954D1;
+  --dark-secondary: #020F2C;
+  --dark-acc: #FF0000;
+  --dark-text: #F0F5FE;
+  font-family: Roboto;
+}
+
+@media screen and (max-width:620px){
+  form{
+    flex-direction: column;
   }
-.myTable{
-  display: none;
+  .dropdown-item{
+    margin: .5em !important;
+  }
+  .sub-btn{
+    margin-top: 1em !important;
+  }
 }
 
-th{
-  /* text-align: center; */
-  padding: 4px;
+#logo{
+  padding: 1em;
+  height: 100px;
+  width: 100px;
+  margin-right: -1em;
+}
+.links{
+  flex-wrap: wrap;
+}
+.left-header{
+  display: flex;
+  margin-left: 1em;
+  align-items: center;
+}
+
+body{
+  all: unset;
+  background-color: var(--dark-bg);
+  color:var(--dark-text);
+  min-width: 600px
+}
+#logo-text{
+  margin: 1em;
+}
+.container{
+  display: flex;
+  flex-direction: column;
+}
+#header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  /* position: absolute; */
+}
+.links{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  padding: 1em;
+  margin-right: 1em;
+}
+a.link{
+  all:unset;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* display: flex; */
+}
+
+a.link:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.dropdown{
+  display: flex;
+  justify-content: center;
+}
+.dropdown-item{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 1em;
+  background-color: var(--dark-bg);
+}
+#teamDropdown, #positionDropdown, #yearDropdown{
+  border: 1px solid var(--dark-text);
 
 }
-td{
-  padding: 4px;
-  margin: 4px;
+#teamDropdown, #positionDropdown, #yearDropdown:hover{
+  cursor: pointer;
+}
+.sub-btn{
+  margin-top: 2em;
+  height: 3em;
+  width: 6em;
+  border-radius: 1em;
+}
+.sub-btn:hover{
+  cursor: pointer;
+  border: 3px solid var(--dark-primary);
 }
 
+label{
+  margin-bottom: .5em;
+}
+select{
+  padding: 1em;
+  border-radius: 1em;
+
+}
 #DataTables_Table_0_wrapper{
   display: none;
 }
+#DataTables_Table_1_wrapper{
+/* .DataTables_Table_1_wrapper{ */
+  /* zoom: 55%; */
+  margin: 5%;
+}
 
-.home-btn{
-  font-size: 30px;
-  color: black;
-  text-decoration: none;
-  display: flex;
-  justify-content: center;
+table,tbody,td,th,label,select,input, #DataTables_Table_1_info{
+  background-color: var(--dark-secondary);
+  color:var(--dark-text)
 }
-.home-btn:hover{
-  text-decoration: underline;
+input:focus{
+  outline: none;
 }
-.top-header{
+.above{
+  background-color: var(--dark-bg);
+  color:var(--dark-text)
+}
+#DataTables_Table_1,tbody{
+  width: 100% !important;
+}
+form{
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.years{
-  margin: 15px;
+#logo-link{
+  all: unset;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
-.year-label{
-  font-size: 30px;
-  padding: 5px;
+table{
+  display:none;
 }
-#yearDropdown{
-  width: 75px;
-  height: 40px;
-  font-size: 16px;
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  color:var(--dark-text) !important;
 }
-.myTable tbody tr:hover{
-  background-color: lightgoldenrodyellow;
+.dataTables_wrapper .dataTables_paginate a.paginate_button {
+color: var(--dark-text) !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  border: 0px;
 }
